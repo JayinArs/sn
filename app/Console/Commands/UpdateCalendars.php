@@ -61,7 +61,7 @@ class UpdateCalendars extends Command
 					        $calendar->last_updated     = Carbon::now( 'UTC' )->toDateTimeString();
 					        $calendar->save();
 
-					        //echo 'updated: ' . $current_date['date'] . '\n';
+					        echo 'updated: ' . $current_date['date'] . '\n';
 				        }
 			        }
 		        } );
