@@ -43,6 +43,6 @@ class TestCommand extends Command
     	else
 	        Storage::disk('local')->put('testcommand.txt', 'Last updated: ' . date('Y-m-d h:i:s'));
 
-        echo 'Updated';
+        echo 'Updated!';
     }
 }
