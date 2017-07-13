@@ -18,11 +18,6 @@ class CalendarController extends Controller
 	public function all()
 	{
 		$calendars = Calendar::all();
-
-		return response()
-			->json( $calendars )
-			->header( 'Access-Control-Allow-Origin', '*' );
-
 		return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), $calendars );
 	}
 

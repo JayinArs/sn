@@ -28,7 +28,7 @@ class ResponseHelper
 	{
 		$this->json = [];
 
-		if ( $data || ($code == 200 && $data != null) ) {
+		if ( $data || ( $code == 200 && $data != null ) ) {
 			$this->json['data'] = $data;
 		}
 
@@ -70,6 +70,8 @@ class ResponseHelper
 			}
 		}
 
-		return response()->json( $this->json );
+		return response()
+			->json( $this->json )
+			->header( 'Access-Control-Allow-Origin', '*' );
 	}
 }
