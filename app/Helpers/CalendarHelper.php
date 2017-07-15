@@ -52,17 +52,16 @@ class CalendarHelper
 				$response = $prayer->get();
 
 				if ( $response["code"] == 200 ) {
-					$maghrib_time = ( ( ! empty( $response["data"]["timings"]["Maghrib"] ) ) ? $response["data"]["timings"]["Maghrib"] : null );
-					$maghrib      = Carbon::parse( $maghrib_time, $timezone );
-					//$maghrib      = Carbon::parse( '10:25', $timezone );
+					$sunset_time = ( ( ! empty( $response["data"]["timings"]["Maghrib"] ) ) ? $response["data"]["timings"]["Maghrib"] : null );
+					$sunset      = Carbon::parse( $sunset_time, $timezone );
 
-					if ( $datetime->diffInMinutes( $maghrib, false ) > 0 ) {
+					if ( $datetime->diffInMinutes( $sunset, false ) > 0 ) {
 						$date->subDay( 1 );
 					}
 
 					return [
 						'date' => $date->format( 'Y-m-d' ),
-						'time' => $maghrib_time
+						'time' => $sunset_time
 					];
 				}
 			}

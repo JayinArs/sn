@@ -7,6 +7,7 @@ use App\Timezone;
 use Carbon\Carbon;
 use DateTimeZone;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Config;
 use Validator;
 use JSONResponse;
@@ -18,6 +19,7 @@ class CalendarController extends Controller
 	public function all()
 	{
 		$calendars = Calendar::all();
+
 		return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), $calendars );
 	}
 
@@ -57,5 +59,12 @@ class CalendarController extends Controller
 		}
 
 		return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.NOT_FOUND' ), null, MultiLang::getPhraseByKey( 'strings.timezone.not_found' ) );
+	}
+
+	public function update( Request $request )
+	{
+		Artisan::call( 'calendar:update' );
+
+		return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), null );
 	}
 }

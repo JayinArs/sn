@@ -110,6 +110,7 @@ Route::group(['prefix' => 'v1', 'middleware' => 'token'], function() {
 	 */
 	Route::group( [ 'prefix' => 'calendar' ], function () {
 		Route::post( 'create', 'CalendarController@create' )->name( 'calendar.create' );
+		Route::post( 'update', 'CalendarController@update' )->name( 'calendar.update' );
 		//Route::get( 'all', 'CalendarController@all' )->name( 'calendar.all' );
 	});
 });
