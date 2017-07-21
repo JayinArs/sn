@@ -22,7 +22,7 @@ Route::post( 'v1/register', 'AuthController@register' );
 /*
  * Language Routes
  */
-Route::group( [ 'prefix' => 'language' ], function () {
+Route::group( [ 'prefix' => 'v1/language' ], function () {
 	Route::get( 'all', 'LanguageController@all' )->name( 'language.all' );
 } );
 
