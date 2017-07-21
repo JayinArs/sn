@@ -20,3 +20,7 @@ Artisan::command('inspire', function () {
 Artisan::command('calendar:update', function () {
 	$this->info('Updating calendars');
 });
+
+Artisan::command('event:add {id}', function () {
+	$this->info('Sending event notifications');
+});

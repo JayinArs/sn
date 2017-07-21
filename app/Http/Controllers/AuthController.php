@@ -25,7 +25,7 @@ class AuthController extends Controller
 	public function login( Request $request )
 	{
 		$validation_rules = [
-			'device_id' => 'required|exists:users,id'
+			'imei' => 'required|exists:users,imei'
 		];
 
 		$validator = Validator::make( $request->all(), $validation_rules );
@@ -35,7 +35,7 @@ class AuthController extends Controller
 			return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.FAILED' ), null, MultiLang::getPhrase( $messages[0] ) );
 		}
 
-		$user = User::with( 'meta_data' )->find( $request->input( 'device_id' ) );
+		$user = User::with( 'meta_data' )->where( 'imei', $request->input( 'imei' ) )->first();
 
 		if ( ! empty( $user ) ) {
 			$token = Token::updateToken( $user );

@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Config;
 use Validator;
 use JSONResponse;
 use MultiLang;
+use PushNotification;
 
 class EventController extends Controller
 {
@@ -50,6 +51,7 @@ class EventController extends Controller
 		]);
 
 		if($event->id > 0) {
+			PushNotification::notify('event', $event);
 			return JSONResponse::encode(Config::get('constants.HTTP_CODES.SUCCESS'), $event);
 		} else {
 			return JSONResponse::encode(Config::get('constants.HTTP_CODES.FAILED'), null, MultiLang::getPhraseByKey('strings.event.creation_failed'));

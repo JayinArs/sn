@@ -57,5 +57,11 @@ class AppServiceProvider extends ServiceProvider
 
 		    return $calendar;
 	    });
+
+	    $this->app->singleton('push_notification', function ($app) {
+		    $push = new App\Helpers\PushNotificationHelper();
+
+		    return $push;
+	    });
     }
 }

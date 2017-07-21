@@ -28,8 +28,8 @@ class Kernel extends ConsoleKernel
 	{
 		// $schedule->command('inspire')
 		//          ->hourly();
-		$schedule->command( 'calendar:update' )->everyThirtyMinutes();
-		$schedule->command( 'command:test' )->everyMinute();
+		//$schedule->command( 'command:test' )->everyMinute();
+		$schedule->command( 'calendar:update' )->everyTenMinutes();
 	}
 
 	/**
