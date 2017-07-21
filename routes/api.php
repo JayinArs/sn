@@ -16,10 +16,17 @@ use Illuminate\Http\Request;
 /**
  * Authentication Routes
  */
-Route::post('v1/login', 'AuthController@login');
-Route::post('v1/register', 'AuthController@register');
+Route::post( 'v1/login', 'AuthController@login' );
+Route::post( 'v1/register', 'AuthController@register' );
 
-Route::group(['prefix' => 'v1', 'middleware' => 'token'], function() {
+/*
+ * Language Routes
+ */
+Route::group( [ 'prefix' => 'language' ], function () {
+	Route::get( 'all', 'LanguageController@all' )->name( 'language.all' );
+} );
+
+Route::group( [ 'prefix' => 'v1', 'middleware' => 'token' ], function () {
 	/**
 	 * User Routes
 	 */
@@ -48,13 +55,6 @@ Route::group(['prefix' => 'v1', 'middleware' => 'token'], function() {
 	 */
 	Route::group( [ 'prefix' => 'post' ], function () {
 		Route::get( 'random', 'PostController@random' )->name( 'post.random' );
-	} );
-
-	/*
-	 * Language Routes
-	 */
-	Route::group( [ 'prefix' => 'language' ], function () {
-		Route::get( 'all', 'LanguageController@all' )->name( 'language.all' );
 	} );
 
 	/*
@@ -112,7 +112,7 @@ Route::group(['prefix' => 'v1', 'middleware' => 'token'], function() {
 		Route::post( 'create', 'CalendarController@create' )->name( 'calendar.create' );
 		Route::post( 'update', 'CalendarController@update' )->name( 'calendar.update' );
 		//Route::get( 'all', 'CalendarController@all' )->name( 'calendar.all' );
-	});
-});
+	} );
+} );
 
 Route::get( 'v1/calendar/all', 'CalendarController@all' )->name( 'calendar.all' );
