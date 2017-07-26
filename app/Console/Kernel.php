@@ -14,7 +14,9 @@ class Kernel extends ConsoleKernel
 	 */
 	protected $commands = [
 		Commands\UpdateCalendars::class,
-		Commands\TestCommand::class
+		Commands\TestCommand::class,
+		Commands\NotifyAddEvent::class,
+		Commands\NotifyImportantEvents::class
 	];
 
 	/**

@@ -38,7 +38,7 @@ class AuthController extends Controller
 		$user = User::with( 'meta_data' )->where( 'imei', $request->input( 'imei' ) )->first();
 
 		if ( ! empty( $user ) ) {
-			$token = Token::updateToken( $user );
+			$token = Token::updateToken( $user, $request->input( 'timezone', 'UTC' ) );
 
 			return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), [
 				'user'  => $user,
@@ -77,7 +77,8 @@ class AuthController extends Controller
 			                      'fcm_id'            => $request->input( 'fcm_id' ),
 			                      'udid'              => $request->input( 'udid' ),
 			                      'api_token'         => str_random( 60 ),
-			                      'registration_date' => Carbon::now()->toDateTimeString()
+			                      'registration_date' => Carbon::now()->toDateTimeString(),
+			                      'timezone'          => $request->input( 'timezone', 'UTC' )
 		                      ] );
 
 		if ( $user->id > 0 ) {

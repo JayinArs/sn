@@ -5,7 +5,10 @@ namespace App\Console\Commands;
 use App\Event;
 use App\Notifications\EventCreated;
 use App\OrganizationFollower;
+use GuzzleHttp\Exception\ClientException;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Storage;
+use Mockery\Exception;
 
 class NotifyAddEvent extends Command
 {
@@ -40,15 +43,22 @@ class NotifyAddEvent extends Command
 	 */
 	public function handle()
 	{
-		$id    = $this->argument( 'id' );
-		$event = Event::find( $id );
+		$id        = $this->argument( 'id' );
+		$event     = Event::find( $id );
+		$followers = 0;
 
 		OrganizationFollower::with( [
 			                            'user',
 			                            'user.meta_data'
 		                            ] )->where( 'organization_location_id', $event->organization_location_id )
-		                    ->each( function ( $follower ) use ( &$event ) {
-			                    $follower->user->notify( new EventCreated( $event ) );
+		                    ->each( function ( $follower ) use ( &$event, &$followers ) {
+			                    $followers ++;
+			                    try {
+				                    $follower->user->notify( new EventCreated( $event ) );
+			                    } catch ( ClientException $e ) {
+				                    $followers --;
+			                    }
 		                    } );
+		$this->info( 'Event added at: ' . date( 'Y-m-d h:i:s' ) . ' followed by ' . $followers . ' users' );
 	}
 }

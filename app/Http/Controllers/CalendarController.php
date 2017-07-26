@@ -61,6 +61,11 @@ class CalendarController extends Controller
 		return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.NOT_FOUND' ), null, MultiLang::getPhraseByKey( 'strings.timezone.not_found' ) );
 	}
 
+	/**
+	 * @param Request $request
+	 *
+	 * @return mixed
+	 */
 	public function update( Request $request )
 	{
 		Artisan::call( 'calendar:update' );

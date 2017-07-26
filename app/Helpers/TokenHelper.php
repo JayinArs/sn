@@ -10,31 +10,36 @@ use Carbon\Carbon;
 
 class TokenHelper
 {
-    /**
-     * TokenHelper constructor.
-     */
-    public function __construct()
+	/**
+	 * TokenHelper constructor.
+	 */
+	public function __construct()
 	{
 
 	}
 
-    /**
-     * @param $token
-     * @return bool
-     */
-    public function verifyToken($token)
+	/**
+	 * @param $token
+	 *
+	 * @return bool
+	 */
+	public function verifyToken( $token )
 	{
-		$user = User::where('api_token', $token)->with('language')->get()->first();
-		return (!empty($user) ? $user : false);
+		$user = User::where( 'api_token', $token )->with( 'language' )->get()->first();
+
+		return ( ! empty( $user ) ? $user : false );
 	}
 
-    /**
-     * @param User $user
-     * @return mixed|string
-     */
-    public function updateToken(User $user)
+	/**
+	 * @param User $user
+	 * @param $timezone
+	 *
+	 * @return mixed|string
+	 */
+	public function updateToken( User $user, $timezone )
 	{
-		$user->api_token = str_random(60);
+		$user->api_token = str_random( 60 );
+		$user->timezone  = $timezone;
 		$user->save();
 
 		return $user->api_token;

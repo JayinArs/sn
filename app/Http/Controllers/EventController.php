@@ -25,7 +25,7 @@ class EventController extends Controller
 			'organization_location_id' => 'required|exists:organization_locations,id',
 			'user_id' => 'required|exists:users,id',
 			'account_id' => 'required|exists:accounts,id',
-			'english_date' => 'nullable|date_format:Y-m-d|after:' . Carbon::now()->toDateString(),
+			'english_date' => 'nullable|date_format:Y-m-d',
 			'hijri_date' => 'nullable|date_format:Y-m-d',
 			'start_time' => 'nullable|date_format:H:i:s',
 			'end_time' => 'nullable|date_format:H:i:s'

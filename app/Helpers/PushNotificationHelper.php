@@ -20,18 +20,30 @@ class PushNotificationHelper
 
 	}
 
-	private function pushEvent( Event $event )
+	private function push_event( Event $event )
 	{
 		Artisan::call( "event:add", [
 			'id' => $event->id
 		] );
 	}
 
-	public function notify( $type, Event $event )
+	private function push_system_events( $args )
+	{
+		Artisan::call( "event:notify", [
+			'--system',
+			'--timezone' => $args['timezone'],
+			'date'       => $args['date']
+		] );
+	}
+
+	public function notify( $type, $args )
 	{
 		switch ( $type ) {
 			case "event":
-				$this->pushEvent( $event );
+				$this->push_event( $args );
+				break;
+			case "system_events":
+				$this->push_system_events( $args );
 				break;
 		}
 	}

@@ -7,6 +7,7 @@ use App\Timezone;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Hijri;
+use PushNotification;
 
 class UpdateCalendars extends Command
 {
@@ -64,6 +65,11 @@ class UpdateCalendars extends Command
 						        $calendar->next_update_time = $prayer;
 						        $calendar->last_updated     = Carbon::now( $calendar->timezone )->toDateTimeString();
 						        $calendar->save();
+
+						        PushNotification::notify( 'system_events', [
+							        'timezone' => $calendar->timezone,
+							        'date'     => $current_date['date']
+						        ] );
 
 						        echo 'updated: ' . $current_date['date'] . '\n';
 					        }

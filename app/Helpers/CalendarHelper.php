@@ -15,6 +15,32 @@ class CalendarHelper
 
 	}
 
+	/**
+	 * @param $date
+	 *
+	 * @param string $format
+	 *
+	 * @return string
+	 */
+	public function format_date( $date, $format = 'j F Y' )
+	{
+		$months = Config::get( 'constants.hijri.months' );
+
+		$date      = Carbon::parse( $date );
+		$month     = $months[ $date->month - 1 ];
+		$format    = str_replace( 'F', '%%', $format );
+		$formatted = str_replace( '%%', $month, $date->format( $format ) );
+
+		return $formatted;
+	}
+
+	/**
+	 * @param Carbon $datetime
+	 * @param $city
+	 * @param $country
+	 *
+	 * @return bool|string
+	 */
 	public function getPrayerTime( Carbon $datetime, $city, $country )
 	{
 		try {
@@ -35,6 +61,13 @@ class CalendarHelper
 		return false;
 	}
 
+	/**
+	 * @param string $timezone
+	 * @param $city
+	 * @param $country
+	 *
+	 * @return array|bool
+	 */
 	public function getHijriDateByGeorgian( $timezone = 'UTC', $city, $country )
 	{
 		try {

@@ -21,6 +21,6 @@ Artisan::command('calendar:update', function () {
 	$this->info('Updating calendars');
 });
 
-Artisan::command('event:add {id}', function () {
+Artisan::command('event:add {id}', function ($id) {
 	$this->info('Sending event notifications');
 });

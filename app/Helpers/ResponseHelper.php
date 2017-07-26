@@ -28,7 +28,7 @@ class ResponseHelper
 	{
 		$this->json = [];
 
-		if ( $data || ( $code == 200 && $data != null ) ) {
+		if ( $data || ( $code == 200 && !is_null($data) ) ) {
 			$this->json['data'] = $data;
 		}
 

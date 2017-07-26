@@ -23,6 +23,7 @@ class CreateUsersTable extends Migration
 		    $table->string('status')->default('active');
 		    $table->string('api_token')->nullable();
 		    $table->string('imei')->nullable();
+		    $table->string('timezone')->nullable();
 		    $table->dateTime('registration_date')->default(DB::raw('CURRENT_TIMESTAMP'));
 
 		    $table->foreign('language_id')->references('id')->on('languages')->onDelete('cascade');
