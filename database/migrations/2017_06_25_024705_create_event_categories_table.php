@@ -6,26 +6,39 @@ use Illuminate\Database\Migrations\Migration;
 
 class CreateEventCategoriesTable extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
-    public function up()
-    {
-	    Schema::create('event_categories', function (Blueprint $table) {
-		    $table->increments( 'id' );
-		    $table->string('name');
-	    });
-    }
+	/**
+	 * Run the migrations.
+	 *
+	 * @return void
+	 */
+	public function up()
+	{
+		Schema::create( 'event_categories', function ( Blueprint $table ) {
+			$table->increments( 'id' );
+			$table->string( 'name' );
+		} );
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
-    public function down()
-    {
-        Schema::dropIfExists('event_categories');
-    }
+		DB::table( 'event_categories' )->insert(
+			array(
+				[
+					'id'   => 1,
+					'name' => 'Martyrdom'
+				],
+				[
+					'id'   => 2,
+					'name' => 'Birth Date'
+				]
+			)
+		);
+	}
+
+	/**
+	 * Reverse the migrations.
+	 *
+	 * @return void
+	 */
+	public function down()
+	{
+		Schema::dropIfExists( 'event_categories' );
+	}
 }

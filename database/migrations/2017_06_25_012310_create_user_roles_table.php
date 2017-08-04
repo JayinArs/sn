@@ -23,6 +23,10 @@ class CreateUserRolesTable extends Migration
 		    array(
 			    [
 				    'id'    => 1,
+				    'name'  => 'administrator'
+			    ],
+			    [
+				    'id'    => 2,
 				    'name'  => 'subscriber'
 			    ]
 		    )

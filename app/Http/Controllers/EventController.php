@@ -3,80 +3,266 @@
 namespace App\Http\Controllers;
 
 use App\Event;
-use Carbon\Carbon;
+use App\EventCategory;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Config;
+use Datatables;
+use Illuminate\Support\Facades\Auth;
 use Validator;
-use JSONResponse;
-use MultiLang;
-use PushNotification;
+use Hijri;
 
 class EventController extends Controller
 {
 	/**
-	 * @param Request $request
+	 * Display a listing of the resource.
 	 *
+	 * @return \Illuminate\Http\Response
+	 */
+	public function index()
+	{
+		return view( 'event.index', [ 'is_system' => false ] );
+	}
+
+	/**
+	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+	 */
+	public function system_list()
+	{
+		return view( 'event.index', [ 'is_system' => true ] );
+	}
+
+	/**
 	 * @return mixed
 	 */
-	public function create(Request $request)
+	public function data()
 	{
+		return Datatables::of( Event::with( [ 'category', 'organization_location.organization' ] )
+		                            ->where( 'is_system_event', 0 )
+		                            ->get() )->make( true );
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function system_data()
+	{
+		return Datatables::of( Event::with( [ 'category', 'organization_location.organization' ] )
+		                            ->where( 'is_system_event', 1 )
+		                            ->get() )->make( true );
+	}
+
+	/**
+	 * Show the form for creating a new resource.
+	 *
+	 * @return \Illuminate\Http\Response
+	 */
+	public function create()
+	{
+		return view( 'event.create', [ 'is_system' => false ] );
+	}
+
+	/**
+	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+	 */
+	public function system_create()
+	{
+		$categories = $this->get_categories();
+
+		return view( 'event.create', [ 'is_system' => true, 'categories' => $categories ] );
+	}
+
+	/**
+	 * Store a newly created resource in storage.
+	 *
+	 * @param  \Illuminate\Http\Request $request
+	 *
+	 * @return \Illuminate\Http\Response
+	 */
+	public function store( Request $request )
+	{
+		//
+	}
+
+	public function system_store( Request $request )
+	{
+		$user = Auth::user();
+
 		$validation_rules = [
-			'title' => 'required',
-			'organization_location_id' => 'required|exists:organization_locations,id',
-			'user_id' => 'required|exists:users,id',
-			'account_id' => 'required|exists:accounts,id',
-			'english_date' => 'nullable|date_format:Y-m-d',
-			'hijri_date' => 'nullable|date_format:Y-m-d',
-			'start_time' => 'nullable|date_format:H:i:s',
-			'end_time' => 'nullable|date_format:H:i:s'
+			"category"      => "required",
+			"title"         => "required",
+			"islamic.month" => "required",
+			"islamic.day"   => "required",
+			"islamic.year"  => "required"
 		];
 
-		$validator = Validator::make($request->all(), $validation_rules);
-		$messages = $validator->messages()->all();
+		$validator = Validator::make( $request->all(), $validation_rules );
+		$messages  = $validator->messages()->all();
 
-		if ($validator->fails())
-			return JSONResponse::encode(Config::get('constants.HTTP_CODES.FAILED'), null, MultiLang::getPhrase($messages[0]));
+		if ( $validator->fails() ) {
+			$error = $messages[0];
 
-		$event = Event::create([
-			'title' => $request->input('title'),
-			'organization_location_id' => $request->input('organization_location_id'),
-			'user_id' => $request->input('user_id'),
-			'account_id' => $request->input('account_id'),
-			'is_system_event' => 0,
-			'start_time' => $request->input('start_time'),
-			'end_time' => $request->input('end_time', $request->input('start_time')),
-			'english_date' => $request->input('english_date'),
-			'hijri_date' => $request->input('hijri_date'),
-			'venue' => $request->input('venue')
-		]);
+			return response()->json( [
+				                         'status'  => 'danger',
+				                         'message' => $error
+			                         ] );
+		}
 
-		if($event->id > 0) {
-			PushNotification::notify('event', $event);
-			return JSONResponse::encode(Config::get('constants.HTTP_CODES.SUCCESS'), $event);
-		} else {
-			return JSONResponse::encode(Config::get('constants.HTTP_CODES.FAILED'), null, MultiLang::getPhraseByKey('strings.event.creation_failed'));
+		$date     = Hijri::parse( $request->input( 'islamic.month' ), $request->input( 'islamic.day' ), $request->input( 'islamic.year' ) );
+		$category = $request->input( 'category' );
+
+		if ( $category == 'other' ) {
+			$category = null;
+		}
+
+		$event = Event::create( [
+			                        'title'           => $request->input( 'title' ),
+			                        'hijri_date'      => $date->format( 'Y-m-d' ),
+			                        'is_system_event' => 1,
+			                        'account_id'      => $user->id,
+			                        'category_id'     => $category
+		                        ] );
+
+		if ( $event->id > 0 ) {
+			return response()->json( [
+				                         'status'  => 'success',
+				                         'message' => 'Event created successfully'
+			                         ] );
+		}
+
+		return response()->json( [
+			                         'status'  => 'danger',
+			                         'message' => 'Failed to create event'
+		                         ] );
+	}
+
+	/**
+	 * Display the specified resource.
+	 *
+	 * @param  \App\Event $event
+	 *
+	 * @return \Illuminate\Http\Response
+	 */
+	public function show( Event $event )
+	{
+		//
+	}
+
+	/**
+	 * Show the form for editing the specified resource.
+	 *
+	 * @param  \App\Event $event
+	 *
+	 * @return \Illuminate\Http\Response
+	 */
+	public function edit( Event $event )
+	{
+		return view( 'event.edit', [ 'is_system' => false, 'event' => $event ] );
+	}
+
+	/**
+	 * @param Event $event
+	 *
+	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+	 */
+	public function system_edit( Event $event )
+	{
+		$categories = $this->get_categories();
+		if(!$event->category_id)
+			$event->category_id = 'other';
+
+		return view( 'event.edit', [ 'is_system' => true, 'event' => $event, 'categories' => $categories ] );
+	}
+
+	/**
+	 * Update the specified resource in storage.
+	 *
+	 * @param  \Illuminate\Http\Request $request
+	 * @param  \App\Event $event
+	 *
+	 * @return \Illuminate\Http\Response
+	 */
+	public function update( Request $request, Event $event )
+	{
+		//
+	}
+
+	public function system_update( Request $request, Event $event )
+	{
+		$user = Auth::user();
+
+		$validation_rules = [
+			"category"      => "required",
+			"title"         => "required",
+			"islamic.month" => "required",
+			"islamic.day"   => "required",
+			"islamic.year"  => "required"
+		];
+
+		$validator = Validator::make( $request->all(), $validation_rules );
+		$messages  = $validator->messages()->all();
+
+		if ( $validator->fails() ) {
+			$error = $messages[0];
+
+			return response()->json( [
+				                         'status'  => 'danger',
+				                         'message' => $error
+			                         ] );
+		}
+
+		$date     = Hijri::parse( $request->input( 'islamic.month' ), $request->input( 'islamic.day' ), $request->input( 'islamic.year' ) );
+		$category = $request->input( 'category' );
+
+		if ( $category == 'other' ) {
+			$category = null;
+		}
+
+		$event->fill( [
+			              'category_id' => $category,
+			              'hijri_date'  => $date->format( 'Y-m-d' ),
+			              'title'       => $request->input( 'title' )
+		              ] );
+
+		if ( $event->save() ) {
+			return response()->json( [
+				                         'status'  => 'success',
+				                         'message' => 'Event updated successfully'
+			                         ] );
+		}
+
+		return response()->json( [
+			                         'status'  => 'danger',
+			                         'message' => 'Failed to update event'
+		                         ] );
+	}
+
+	/**
+	 * Remove the specified resource from storage.
+	 *
+	 * @param  \App\Event $event
+	 *
+	 * @return \Illuminate\Http\Response
+	 */
+	public function destroy( Event $event )
+	{
+		if ( $event->delete() ) {
+			return response()->json( [
+				                         'status'  => 'success',
+				                         'message' => 'Event deleted successfully'
+			                         ] );
 		}
 	}
 
 	/**
-	 * @param $id
-	 *
-	 * @return mixed
+	 * @return array
 	 */
-	public function delete($id)
+	private function get_categories()
 	{
-		$deleted = false;
-		$event = Event::find($id);
+		$categories = [];
+		EventCategory::all()->each( function ( $category ) use ( &$categories ) {
+			$categories[ $category->id ] = $category->name;
+		} );
+		$categories['other'] = 'Other';
 
-		if($event)
-			$deleted = $event->delete();
-		else
-			return JSONResponse::encode(Config::get('constants.HTTP_CODES.NOT_FOUND'), null, MultiLang::getPhraseByKey('strings.event.not_found'));
-
-		if($deleted) {
-			return JSONResponse::encode(Config::get('constants.HTTP_CODES.SUCCESS'), null, MultiLang::getPhraseByKey('strings.event.deleted'));
-		} else {
-			return JSONResponse::encode(Config::get('constants.HTTP_CODES.FAILED'), null, MultiLang::getPhraseByKey('strings.event.deletion_failed'));
-		}
+		return $categories;
 	}
 }

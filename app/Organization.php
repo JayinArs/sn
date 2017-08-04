@@ -12,7 +12,10 @@ class Organization extends Model
 	 * @var array
 	 */
 	protected $fillable = [
-		'name', 'is_official', 'account_id', 'status'
+		'name',
+		'is_official',
+		'account_id',
+		'status'
 	];
 
 	protected $table = 'organizations';
@@ -23,7 +26,7 @@ class Organization extends Model
 	 */
 	public function account()
 	{
-		return $this->belongsTo('App\Account', 'account_id');
+		return $this->belongsTo( 'App\Account', 'account_id' );
 	}
 
 	/**
@@ -31,6 +34,6 @@ class Organization extends Model
 	 */
 	public function meta_data()
 	{
-		return $this->hasMany('App\OrganizationMeta', 'organization_id', 'id');
+		return $this->hasMany( 'App\OrganizationMeta', 'organization_id', 'id' );
 	}
 }

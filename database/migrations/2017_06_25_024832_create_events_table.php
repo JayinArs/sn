@@ -22,8 +22,8 @@ class CreateEventsTable extends Migration
 		    $table->time('start_time')->nullable();
 		    $table->time('end_time')->nullable();
 		    $table->boolean('is_system_event')->default(false);
-		    $table->integer('organization_location_id')->unsigned();
-		    $table->integer('user_id')->unsigned();
+		    $table->integer('organization_location_id')->unsigned()->nullable();
+		    $table->integer('user_id')->unsigned()->nullable();
 		    $table->integer('account_id')->unsigned();
 		    $table->integer('category_id')->unsigned()->nullable();
 		    $table->string('venue')->nullable();

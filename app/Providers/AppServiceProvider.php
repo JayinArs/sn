@@ -52,6 +52,12 @@ class AppServiceProvider extends ServiceProvider
             return $dashboard;
         });
 
+	    $this->app->singleton('element', function ($app) {
+		    $element = new App\Helpers\ElementHelper();
+
+		    return $element;
+	    });
+
 	    $this->app->singleton('calendar', function ($app) {
 		    $calendar = new App\Helpers\CalendarHelper();
 

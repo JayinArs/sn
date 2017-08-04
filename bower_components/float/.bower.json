@@ -1,0 +1,11 @@
+{
+  "name": "float",
+  "_cacheHeaders": {
+    "Last-Modified": "Thu, 17 Nov 2016 15:58:18 GMT",
+    "Content-Length": "649913",
+    "Content-Type": "application/zip"
+  },
+  "_source": "http://www.flotcharts.org/downloads/flot-0.8.3.zip",
+  "_target": "*",
+  "_originalSource": "http://www.flotcharts.org/downloads/flot-0.8.3.zip"
+}

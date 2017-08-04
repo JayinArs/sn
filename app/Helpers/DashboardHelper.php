@@ -46,7 +46,6 @@ class DashboardHelper
                 $queue = array_merge($queue, $navigation['children']);
             }
         } while (!empty($queue));
-        die;
         $this->active_navigation = false;
     }
 

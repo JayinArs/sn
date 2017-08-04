@@ -8,93 +8,57 @@ use Illuminate\Support\Facades\Request;
 
 class ElementHelper
 {
-    private $active_navigation;
-    private $navigations;
-    private $user;
-    private $title;
+	public function navbar( $array )
+	{
+		$navigations       = isset( $array['navigations'] ) ? $array['navigations'] : [];
+		$active_navigation = isset( $array['active_navigation'] ) ? $array['active_navigation'] : false;
+		$user              = isset( $array['user'] ) ? $array['user'] : false;
+		$id                = isset( $array['id'] ) ? $array['id'] : 'navbar';
+		echo "\n<ul class='nav' id='{$id}'>";
+		foreach ( $navigations as $navigation ) {
+			$this->navbar_item( $id, $navigation, $active_navigation );
+		}
+		echo "\n</ul>";
+	}
 
-    /**
-     * DashboardHelper constructor.
-     */
-    public function __construct()
-    {
-        $user = Auth::user();
-        $navigations = Config::get('constants.navigations');
+	private function navbar_item( $id, $navigation, &$active_navigation )
+	{
+		$html_start;
+		$html_content = '';
+		$html_end;
+		$action    = isset( $navigation['action'] ) ? $navigation['action'] : false;
+		$item_type = $navigation['item_type'];
 
-        $this->navigations = $navigations;
-        $this->user = $user;
-        $this->config_active_navigation();
-    }
+		switch ( $item_type ) {
+			case 'heading':
+				$html_start = "\n<li class='nav-heading'>";
+				$html_end   = '';
+				break;
+			case 'group':
+				$html_start = "\n<li><a href='#{$id}_{$action}' data-toggle='collapse'>";
+				$html_end   = '</a>';
+				break;
+			default:
+				$url        = url( $action );
+				$html_start = ( $active_navigation && $active_navigation['action'] == $action ) ? "<li class='active'><a href='{$url}'>" : "<li><a href='{$url}'>";
+				$html_end   = '</a>';
+				break;
+		}
 
-    /**
-     *
-     */
-    private function config_active_navigation()
-    {
-        $path = Request::path();
-        $queue = $this->navigations;
-        do {
-            $navigation = array_shift($queue);
-            if ($navigation['item_type'] == 'item' && strpos($path, $navigation['action']) === 0) {
-                $this->active_navigation = $navigation;
-                $this->title = $navigation['label'];
+		if ( isset( $navigation['icon'] ) ) {
+			$html_content .= "\n<em class='{$navigation['icon']}'></em>";
+		}
+		$html_content .= "\n<span>{$navigation['label']}</span>";
+		echo "{$html_start}{$html_content}{$html_end}";
 
-                return;
-            }
-
-            if (isset($navigation['children'])) {
-                $queue = array_merge($queue, $navigation['children']);
-            }
-        } while (!empty($queue));
-        die;
-        $this->active_navigation = false;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function active_navigation()
-    {
-        return $this->active_navigation;
-    }
-
-    /**
-     * @param $title
-     */
-    public function setTitle($title)
-    {
-        $this->title = $title;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function title()
-    {
-        return (empty($this->title)) ? Config::get('app.name') : $this->title;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function navigations()
-    {
-        return $this->navigations;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function user_setting()
-    {
-        return $this->user_setting;
-    }
-
-    /**
-     * @return \Illuminate\Contracts\Auth\Authenticatable|null
-     */
-    public function user()
-    {
-        return $this->user;
-    }
+		if ( isset( $navigation['children'] ) ) {
+			echo "\n<ul id='{$id}_{$action}' class='nav sidebar-subnav collapse'>";
+			$child_navigations = $navigation['children'];
+			foreach ( $child_navigations as $child_navigation ) {
+				$this->navbar_item( $id, $child_navigation, $active_navigation );
+			}
+			echo "\n</ul>";
+		}
+		echo "\n</li>";
+	}
 }

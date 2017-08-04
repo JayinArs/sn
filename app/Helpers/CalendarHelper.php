@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 use App;
+use Form;
 
 class CalendarHelper
 {
@@ -32,6 +33,51 @@ class CalendarHelper
 		$formatted = str_replace( '%%', $month, $date->format( $format ) );
 
 		return $formatted;
+	}
+
+	/**
+	 * @param $month
+	 * @param $day
+	 *
+	 * @return string
+	 */
+	public function parse( $month, $day, $year )
+	{
+		$str = $year . '-' . $month . '-' . $day;
+
+		return Carbon::parse( $str );
+	}
+
+	public function get_field( $date = false, $month = false, $day = false, $year = false )
+	{
+		$months_count = [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 ];
+		$months       = Config::get( 'constants.hijri.months' );
+		$months       = array_combine( $months_count, $months );
+
+		$days = [];
+
+		for ( $i = 1; $i <= 30; $i ++ ) {
+			$days[ $i ] = ( strlen( $i ) < 2 ? '0' : '' ) . $i;
+		}
+
+		if ( $date ) {
+			$date = Carbon::parse( $date );
+
+			$month = $date->month;
+			$year  = $date->year;
+			$day   = $date->day;
+		}
+
+		$field = '<div class="row">';
+		$field .= '<div class="col-md-4">' . Form::text( 'islamic[year]', $year, [
+				'class'       => 'form-control',
+				'placeholder' => 'Year'
+			] ) . '</div>';
+		$field .= '<div class="col-md-4">' . Form::select( 'islamic[month]', $months, $month, [ 'class' => 'form-control' ] ) . '</div>';
+		$field .= '<div class="col-md-4">' . Form::select( 'islamic[day]', $days, $day, [ 'class' => 'form-control' ] ) . '</div>';
+		$field .= '</div>';
+
+		return $field;
 	}
 
 	/**

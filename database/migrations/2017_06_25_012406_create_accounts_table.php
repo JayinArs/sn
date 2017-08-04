@@ -14,27 +14,28 @@ class CreateAccountsTable extends Migration
 	 */
 	public function up()
 	{
-		Schema::create('accounts', function (Blueprint $table) {
-			$table->increments('id');
-			$table->string('username')->nullable();
-			$table->string('email')->nullable();
-			$table->string('password')->nullable();
-			$table->string('status')->default('active');
-			$table->integer('role_id')->unsigned();
-			$table->dateTime('registration_date')->default(DB::raw('CURRENT_TIMESTAMP'));
+		Schema::create( 'accounts', function ( Blueprint $table ) {
+			$table->increments( 'id' );
+			$table->string( 'username' )->nullable();
+			$table->string( 'email' )->nullable();
+			$table->string( 'password' )->nullable();
+			$table->string( 'status' )->default( 'active' );
+			$table->integer( 'role_id' )->unsigned();
+			$table->dateTime( 'registration_date' )->default( DB::raw( 'CURRENT_TIMESTAMP' ) );
+			$table->string( 'remember_token' )->nullable();
 
 			$table->softDeletes();
-			$table->foreign('role_id')->references('id')->on('user_roles')->onDelete('cascade');
-		});
+			$table->foreign( 'role_id' )->references( 'id' )->on( 'user_roles' )->onDelete( 'cascade' );
+		} );
 
-		DB::table('accounts')->insert(
+		DB::table( 'accounts' )->insert(
 			array(
 				[
-					'id'        => 1,
-					'username'  => 'abiidars',
-					'email'     => 'abidr.w@gmail.com',
-					'password'  => bcrypt('abcd123!'),
-					'role_id'   => \App\UserRole::getDefaultRole()->id
+					'id'       => 1,
+					'username' => 'admin',
+					'email'    => 'admin@shiacircle.net',
+					'password' => bcrypt( 'admin999!' ),
+					'role_id'  => \App\UserRole::getDefaultRole()->id
 				]
 			)
 		);
@@ -48,6 +49,6 @@ class CreateAccountsTable extends Migration
 	public function down()
 	{
 		Schema::disableForeignKeyConstraints();
-		Schema::dropIfExists('accounts');
+		Schema::dropIfExists( 'accounts' );
 	}
 }

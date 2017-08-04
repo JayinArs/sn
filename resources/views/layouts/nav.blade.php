@@ -1,53 +1,126 @@
-<nav class="navbar navbar-inverse">
-    <div class="container-fluid">
-        <!-- Brand and toggle get grouped for better mobile display -->
+<!-- top navbar-->
+<header class="topnavbar-wrapper">
+    <!-- START Top Navbar-->
+    <nav role="navigation" class="navbar topnavbar">
+        <!-- START navbar header-->
         <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="#">Brand</a>
-        </div>
-
-        <!-- Collect the nav links, forms, and other content for toggling -->
-        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-            <ul class="nav navbar-nav">
-                <li class="active"><a href="#">Link <span class="sr-only">(current)</span></a></li>
-                <li><a href="#">Link</a></li>
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
-                    <ul class="dropdown-menu">
-                        <li><a href="#">Action</a></li>
-                        <li><a href="#">Another action</a></li>
-                        <li><a href="#">Something else here</a></li>
-                        <li role="separator" class="divider"></li>
-                        <li><a href="#">Separated link</a></li>
-                        <li role="separator" class="divider"></li>
-                        <li><a href="#">One more separated link</a></li>
-                    </ul>
-                </li>
-            </ul>
-            <form class="navbar-form navbar-left">
-                <div class="form-group">
-                    <input type="text" class="form-control" placeholder="Search">
+            <a href="{{ url('/')}}" class="navbar-brand">
+                <div class="brand-logo">
+                    <img src="/img/logo.png" alt="{{ config('app.name') }}" class="img-responsive hide">
+                    ShiaCircle
                 </div>
-                <button type="submit" class="btn btn-default">Submit</button>
-            </form>
+            </a>
+        </div>
+        <!-- END navbar header-->
+
+        <!-- START Nav wrapper-->
+        <div class="nav-wrapper">
+            <!-- START Left navbar-->
+            <ul class="nav navbar-nav">
+                <li>
+                    <!-- Button used to collapse the left sidebar. Only visible on tablet and desktops-->
+                    <a href="#" data-trigger-resize="" data-toggle-state="aside-collapsed" class="hidden-xs">
+                        <em class="fa fa-navicon"></em>
+                    </a>
+                    <!-- Button to show/hide the sidebar on mobile. Visible on mobile only.-->
+                    <a href="#" data-toggle-state="aside-toggled" data-no-persist="true"
+                       class="visible-xs sidebar-toggle">
+                        <em class="fa fa-navicon"></em>
+                    </a>
+                </li>
+                <!-- START User avatar toggle-->
+                <li>
+                    <!-- Button used to collapse the left sidebar. Only visible on tablet and desktops-->
+                    <a id="user-block-toggle" href="#user-block" data-toggle="collapse">
+                        <em class="icon-user"></em>
+                    </a>
+                </li>
+                <!-- END User avatar toggle-->
+                <!-- START lock screen-->
+                <li>
+                    <a href="{{ url('/logout') }}"
+                       onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
+                       title="Log out">
+                        <em class="icon-logout"></em>
+                    </a>
+                    <form id="logout-form" action="{{ url('/logout') }}" method="POST" style="display: none;">
+                        {{ csrf_field() }}
+                    </form>
+                </li>
+                <!-- END lock screen-->
+            </ul>
+            <!-- END Left navbar-->
+            <!-- START Right Navbar-->
             <ul class="nav navbar-nav navbar-right">
-                <li><a href="#">Link</a></li>
-                <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
-                    <ul class="dropdown-menu">
-                        <li><a href="#">Action</a></li>
-                        <li><a href="#">Another action</a></li>
-                        <li><a href="#">Something else here</a></li>
-                        <li role="separator" class="divider"></li>
-                        <li><a href="#">Separated link</a></li>
-                    </ul>
+                <!-- Search icon-->
+                <li>
+                    <a href="#" data-search-open="">
+                        <em class="icon-magnifier"></em>
+                    </a>
+                </li>
+                <!-- Fullscreen (only desktops)-->
+                <li class="visible-lg">
+                    <a href="#" data-toggle-fullscreen="">
+                        <em class="fa fa-expand"></em>
+                    </a>
                 </li>
             </ul>
-        </div><!-- /.navbar-collapse -->
-    </div><!-- /.container-fluid -->
-</nav>
+            <!-- END Right Navbar-->
+        </div>
+        <!-- END Nav wrapper-->
+
+        <!-- START Search form-->
+        <form role="search" action="search.html" class="navbar-form">
+            <div class="form-group has-feedback">
+                <input type="text" placeholder="Type and hit enter ..." class="form-control">
+                <div data-search-dismiss="" class="fa fa-times form-control-feedback"></div>
+            </div>
+            <button type="submit" class="hidden btn btn-default">Submit</button>
+        </form>
+        <!-- END Search form-->
+
+    </nav>
+    <!-- END Top Navbar-->
+</header>
+
+<!-- sidebar-->
+<aside class="aside">
+    <!-- START Sidebar (left)-->
+    <div class="aside-inner">
+        <nav data-sidebar-anyclick-close="" class="sidebar">
+            <!-- START user info-->
+            <li class="has-user-block">
+                <div id="user-block" class="collapse">
+                    <div class="item user-block">
+                        <!-- User picture-->
+                        <div class="user-block-picture">
+                            <div class="user-block-status">
+                                <img src="{{$user->avatar}}" alt="Avatar" width="60" height="60"
+                                     class="img-thumbnail img-circle">
+                                <div class="circle circle-success circle-lg"></div>
+                            </div>
+                        </div>
+                        <!-- Name and Job-->
+                        <div class="user-block-info">
+                            <span class="user-block-name">Hello, {{ $user->username }}</span>
+                            <span class="user-block-role">{{ $user->user_role }}</span>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <!-- END user info-->
+
+            <!-- START sidebar nav-->
+        {{
+            Element::navbar([
+                'id' => 'aside_navbar',
+                'user' => $user,
+                'navigations' => $navigations,
+                'active_navigation' => $active_navigation
+            ])
+        }}
+        <!-- END sidebar nav-->
+        </nav>
+    </div>
+    <!-- END Sidebar (left)-->
+</aside>

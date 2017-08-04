@@ -1,0 +1,13 @@
+{
+  "name": "laravel-echo",
+  "homepage": "https://github.com/laravel/echo",
+  "_release": "2e0b5c12a0",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "2e0b5c12a007660a08c3d1dcb0d8c6eec5dd61f4"
+  },
+  "_source": "https://github.com/laravel/echo.git",
+  "_target": "*",
+  "_originalSource": "laravel-echo"
+}
