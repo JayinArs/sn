@@ -1,9 +1,8 @@
-/node_modules
-/bower_components
 /public/hot
 /public/storage
 /public/phpmyadmin
-/storage/*.key
+/storage/*cc
+c.key
 /vendor
 /.idea
 /.vagrant
