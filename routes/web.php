@@ -53,4 +53,20 @@ Route::group( [ 'prefix' => 'admin', 'middleware' => 'auth' ], function () {
 		Route::put( 'system/{event}/update', 'EventController@system_update' )->name( 'event.system.update' ); // Handle edit system event
 	} );
 	Route::resource( 'event', 'EventController' );
+
+	/*
+	 * User Routes
+	 */
+	Route::group( [ 'prefix' => 'user' ], function () {
+		Route::get( 'data', 'UserController@data' )->name( 'user.data' ); // User data
+	} );
+	Route::resource( 'user', 'UserController', [ 'only' => [ 'index', 'show' ] ] );
+
+	/*
+	 * Organization Routes
+	 */
+	Route::group( [ 'prefix' => 'org' ], function () {
+		Route::get( 'data', 'OrganizationController@data' )->name( 'organization.data' ); // Organization data
+	} );
+	Route::resource( 'org', 'OrganizationController' );
 } );

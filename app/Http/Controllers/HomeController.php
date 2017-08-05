@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Event;
+use App\Organization;
+use App\OrganizationLocation;
+use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -27,6 +31,21 @@ class HomeController extends Controller
 	{
 		$user = Auth::user();
 
-		return view( 'home' );
+		$users         = User::all()->count();
+		$active_users  = User::where( 'status', 'active' )->count();
+		$organizations = Organization::all()->count();
+		$events        = Event::all()->count();
+		$locations     = OrganizationLocation::all()->count();
+
+		return view( 'home', [
+			'users'            => $users,
+			'active_users'     => $active_users,
+			'organizations'    => $organizations,
+			'followers'        => 0,
+			'events'           => $events,
+			'top_organization' => '',
+			'accounts'         => 0,
+			'locations'        => $locations
+		] );
 	}
 }
