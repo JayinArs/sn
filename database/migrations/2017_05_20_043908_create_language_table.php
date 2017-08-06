@@ -26,6 +26,11 @@ class CreateLanguageTable extends Migration
 		    		'id'    => 1,
 				    'name'  => 'English',
 				    'code'  => 'en-US'
+			    ],
+			    [
+				    'id'    => 2,
+				    'name'  => 'Japanese',
+				    'code'  => 'jp'
 			    ]
 		    )
 	    );
