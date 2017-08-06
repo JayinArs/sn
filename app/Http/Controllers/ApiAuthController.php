@@ -57,7 +57,7 @@ class ApiAuthController extends Controller
 	public function register( Request $request )
 	{
 		$validation_rules = [
-			'imei' => 'required|unique:users,imei'
+			//'imei' => 'required|unique:users,imei'
 		];
 
 		$validator = Validator::make( $request->all(), $validation_rules );
@@ -71,17 +71,20 @@ class ApiAuthController extends Controller
 			return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.NOT_FOUND' ), null, MultiLang::getPhraseByKey( 'strings.user.device_id_not_found' ) );
 		}
 
-		$user = User::create( [
-			                      'imei'              => $request->input( 'imei' ),
-			                      'language_id'       => $request->input( 'language_id', Language::getDefaultLanguage()->id ),
-			                      'fcm_id'            => $request->input( 'fcm_id' ),
-			                      'udid'              => $request->input( 'udid' ),
-			                      'api_token'         => str_random( 60 ),
-			                      'registration_date' => Carbon::now()->toDateTimeString(),
-			                      'timezone'          => $request->input( 'timezone', 'UTC' )
-		                      ] );
+		$user = User::firstOrCreate( [
+			                             'imei' => $request->input( 'imei' ),
+		                             ] );
+		$user->fill( [
+			             'language_id'       => $request->input( 'language_id', Language::getDefaultLanguage()->id ),
+			             'fcm_id'            => $request->input( 'fcm_id' ),
+			             'udid'              => $request->input( 'udid' ),
+			             'api_token'         => str_random( 60 ),
+			             'registration_date' => Carbon::now()->toDateTimeString(),
+			             'timezone'          => $request->input( 'timezone', 'UTC' ),
+			             'status'            => 'active'
+		             ] );
 
-		if ( $user->id > 0 ) {
+		if ( $user->save() ) {
 			$user = User::with( 'meta_data' )->find( $user->id );
 
 			return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), $user );

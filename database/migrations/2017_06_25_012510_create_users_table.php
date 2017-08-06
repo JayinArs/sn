@@ -19,7 +19,7 @@ class CreateUsersTable extends Migration
 		    $table->integer('account_id')->unsigned()->nullable();
 		    $table->string('fcm_id')->nullable();
 		    $table->string('udid')->nullable();
-		    $table->integer('language_id')->unsigned();
+		    $table->integer('language_id')->unsigned()->nullable();
 		    $table->string('status')->default('active');
 		    $table->string('api_token')->nullable();
 		    $table->string('imei')->nullable();

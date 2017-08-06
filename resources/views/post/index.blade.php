@@ -17,6 +17,7 @@
                                 <th>Post ID#</th>
                                 <th>Cite</th>
                                 <th>Content</th>
+                                <th>Reference</th>
                                 <th>Action</th>
                             </tr>
                             </thead>
@@ -59,6 +60,10 @@
                 {
                     name: 'content',
                     data: 'content'
+                },
+                {
+                    name: 'account.username',
+                    data: 'account.username'
                 },
                 {
                     bSortable: false,
