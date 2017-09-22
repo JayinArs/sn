@@ -105,12 +105,12 @@ class ApiUserController extends Controller
 	 */
 	public function userFollowingOrganizations( $id )
 	{
-		$organizations = [];
+		$temp_organizations = [];
 
 		OrganizationFollower::with( [
 			                            'organization_location.organization',
 			                            'organization_location.organization.meta_data'
-		                            ] )->where( 'user_id', $id )->each( function ( $follower ) use ( &$organizations ) {
+		                            ] )->where( 'user_id', $id )->each( function ( $follower ) use ( &$temp_organizations ) {
 			$organization = $follower->organization_location->organization;
 			$org          = $organization->toArray();
 
@@ -121,11 +121,12 @@ class ApiUserController extends Controller
 				$org['events']    += Event::where( 'organization_location_id', $location->id )->count();
 			} );
 
-			if ( ! isset( $organizations[ $org['id'] ] ) ) {
-				$organizations[ $org['id'] ] = $org;
+			if ( ! isset( $temp_organizations[ $org['id'] ] ) ) {
+				$temp_organizations[ $org['id'] ] = $org;
 			}
-			$organizations[ $org['id'] ]['locations'][] = $follower->organization_location;
+			$temp_organizations[ $org['id'] ]['locations'][] = $follower->organization_location;
 		} );
+		$organizations = array_values( $temp_organizations );
 
 		return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), $organizations );
 	}
