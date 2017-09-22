@@ -121,8 +121,10 @@ class ApiUserController extends Controller
 				$org['events']    += Event::where( 'organization_location_id', $location->id )->count();
 			} );
 
-			$org['locations'][] = $follower->organization_location;
-			$organizations[$org['id']] = $org;
+			if ( ! isset( $organizations[ $org['id'] ] ) ) {
+				$organizations[ $org['id'] ] = $org;
+			}
+			$organizations[ $org['id'] ]['locations'][] = $follower->organization_location;
 		} );
 
 		return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), $organizations );
