@@ -36,4 +36,12 @@ class Organization extends Model
 	{
 		return $this->hasMany( 'App\OrganizationMeta', 'organization_id', 'id' );
 	}
+
+	/**
+	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
+	 */
+	public function locations()
+	{
+		return $this->hasMany( 'App\OrganizationLocation', 'organization_id', 'id' );
+	}
 }

@@ -109,7 +109,8 @@ class ApiUserController extends Controller
 
 		OrganizationFollower::with( [
 			                            'organization_location.organization',
-			                            'organization_location.organization.meta_data'
+			                            'organization_location.organization.meta_data',
+			                            'organization_location.organization.locations'
 		                            ] )->where( 'user_id', $id )->each( function ( $follower ) use ( &$organizations ) {
 			$organization = $follower->organization_location->organization;
 			$org          = $organization->toArray();
