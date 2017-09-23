@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Event;
 use App\Organization;
+use App\OrganizationFeed;
 use App\OrganizationFollower;
 use App\OrganizationLocation;
 use App\OrganizationMeta;
