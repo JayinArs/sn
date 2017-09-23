@@ -54,6 +54,12 @@ class ApiOrganizationController extends Controller
 		return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), $organizations );
 	}
 
+	/**
+	 * @param $id
+	 * @param null $user_id
+	 *
+	 * @return mixed
+	 */
 	public function getSingleOrganization( $id, $user_id = null )
 	{
 		$organization = Organization::with( [ 'meta_data', 'locations' ] )->find( $id );
@@ -247,5 +253,24 @@ class ApiOrganizationController extends Controller
 		} );
 
 		return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), $locations );
+	}
+
+	public function feeds( $organization_id )
+	{
+		$feeds = [];
+
+		$organization = Organization::with( 'locations' )->find( $organization_id );
+
+		foreach ( $organization->locations as $location ) {
+			OrganizationFeed::with( [
+				                        'feed',
+				                        'feed.user',
+				                        'feed.user.meta_data'
+			                        ] )->where( 'organization_location_id', $location->id )->each( function ( $feed_relation ) use ( &$feeds ) {
+				$feeds[] = $feed_relation->feed;
+			} );
+		}
+
+		return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), $feeds );
 	}
 }

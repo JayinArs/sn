@@ -73,6 +73,7 @@ Route::group( [ 'prefix' => 'v1', 'middleware' => 'token' ], function () {
 		Route::get( '{organization_id}/followers', 'ApiOrganizationController@followers' )->name( 'organization.followers' );
 		Route::get( '{organization_id}/location/{location_id}/events', 'ApiLocationController@events' )->name( 'organization.location.events' );
 		Route::get( '{organization_id}/location/{location_id}/feeds', 'ApiLocationController@feeds' )->name( 'organization.location.feeds' );
+		Route::get( '{organization_id}/feeds', 'ApiOrganizationController@feeds' )->name( 'organization.feeds' );
 
 		/*
 		 * Organization Location Routes

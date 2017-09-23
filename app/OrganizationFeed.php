@@ -21,7 +21,7 @@ class OrganizationFeed extends Model
 	/**
 	 * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
 	 */
-	public function organization()
+	public function organization_location()
 	{
 		return $this->belongsTo('App\OrganizationLocation', 'organization_location_id');
 	}
