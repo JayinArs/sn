@@ -54,6 +54,31 @@ class ApiOrganizationController extends Controller
 		return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), $organizations );
 	}
 
+	public function getSingleOrganization( $id, $user_id = null )
+	{
+		$organization = Organization::with( [ 'meta_data', 'locations' ] )->find( $id );
+		$org          = $organization->toArray();
+
+		$org['followers'] = $org['events'] = 0;
+
+		if ( $user_id ) {
+			$org['is_following'] = false;
+		}
+
+		OrganizationLocation::where( 'organization_id', $organization->id )->each( function ( $location ) use ( &$org, &$user_id ) {
+			$org['followers'] += OrganizationFollower::where( 'organization_location_id', $location->id )->count();
+			$org['events']    += Event::where( 'organization_location_id', $location->id )->count();
+
+			if ( $user_id ) {
+				$org['is_following'] = OrganizationFollower::where( 'organization_location_id', $location->id )
+				                                           ->where( 'user_id', $user_id )
+				                                           ->exists();
+			}
+		} );
+
+		return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), $org );
+	}
+
 	/**
 	 * @param Request $request
 	 *
