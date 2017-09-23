@@ -267,8 +267,10 @@ class ApiOrganizationController extends Controller
 				                        'feed',
 				                        'feed.user',
 				                        'feed.user.meta_data'
-			                        ] )->where( 'organization_location_id', $location->id )->each( function ( $feed_relation ) use ( &$feeds ) {
-				$feeds[] = $feed_relation->feed;
+			                        ] )->where( 'organization_location_id', $location->id )->each( function ( $feed_relation ) use ( &$feeds, &$organization ) {
+				$feed                 = $feed_relation->feed->toArray();
+				$feed['organization'] = $organization;
+				$feeds[]              = $feed;
 			} );
 		}
 
