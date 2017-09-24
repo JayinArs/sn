@@ -297,7 +297,7 @@ class ApiOrganizationController extends Controller
 			Event::with( [
 				             'meta_data',
 			             ] )->where( 'organization_location_id', $location->id )->each( function ( $event ) use ( &$event, &$organization ) {
-				$event                 = $event->feed->toArray();
+				$event                 = $event->toArray();
 				$event['organization'] = $organization;
 				$events[]              = $event;
 			} );
