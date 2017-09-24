@@ -256,6 +256,11 @@ class ApiOrganizationController extends Controller
 		return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), $locations );
 	}
 
+	/**
+	 * @param $organization_id
+	 *
+	 * @return mixed
+	 */
 	public function feeds( $organization_id )
 	{
 		$feeds = [];
@@ -275,5 +280,29 @@ class ApiOrganizationController extends Controller
 		}
 
 		return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), $feeds );
+	}
+
+	/**
+	 * @param $organization_id
+	 *
+	 * @return mixed
+	 */
+	public function events( $organization_id )
+	{
+		$events = [];
+
+		$organization = Organization::with( 'locations' )->find( $organization_id );
+
+		foreach ( $organization->locations as $location ) {
+			Event::with( [
+				             'meta_data',
+			             ] )->where( 'organization_location_id', $location->id )->each( function ( $event ) use ( &$event, &$organization ) {
+				$event                 = $event->feed->toArray();
+				$event['organization'] = $organization;
+				$events[]              = $event;
+			} );
+		}
+
+		return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), $events );
 	}
 }
