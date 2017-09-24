@@ -50,18 +50,17 @@ class NotifyImportantEvents extends Command
 				$date     = $calendar->current_date;
 				$timezone = $calendar->timezone;
 
-				$date = Carbon::parse($date);
+				$date = Carbon::parse( $date );
 
 				Event::with( [ 'organization_location.organization', 'category' ] )
 				     ->where( 'is_system_event', 1 )
 				     ->whereDay( 'hijri_date', $date->day )
 				     ->whereMonth( 'hijri_date', $date->month )
 				     ->each( function ( $event ) use ( &$timezone ) {
-					     $this->line( $timezone );
+
 					     User::where( 'timezone', $timezone )
 					         ->each( function ( $user ) use ( &$event ) {
 
-						         $this->line( $user->id );
 						         $user->notify( new ImportantDate( $event ) );
 
 					         } );
@@ -69,9 +68,12 @@ class NotifyImportantEvents extends Command
 				     } );
 			} );
 		} else {
+			$date = Carbon::parse( $date );
+
 			Event::with( [ 'organization_location.organization', 'category' ] )
 			     ->where( 'is_system_event', 1 )
-			     ->where( 'hijri_date', $date )
+			     ->whereDay( 'hijri_date', $date->day )
+			     ->whereMonth( 'hijri_date', $date->month )
 			     ->each( function ( $event ) use ( &$timezone ) {
 
 				     User::where( 'timezone', $timezone )

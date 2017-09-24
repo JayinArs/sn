@@ -62,7 +62,8 @@ class ImportantDate extends Notification
 	{
 		return OneSignalMessage::create()
 		                       ->subject( "{$this->event->title}" )
-		                       ->body( "{$this->event->category->name}" );
+		                       ->body( 'Notification' );
+		//->body( "{$this->event->category->name}" );
 	}
 
 	/**
