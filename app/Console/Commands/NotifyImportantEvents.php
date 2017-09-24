@@ -53,10 +53,11 @@ class NotifyImportantEvents extends Command
 				     ->where( 'is_system_event', 1 )
 				     ->where( 'hijri_date', $date )
 				     ->each( function ( $event ) use ( &$timezone ) {
-
+					     $this->line( $timezone );
 					     User::where( 'timezone', $timezone )
 					         ->each( function ( $user ) use ( &$event ) {
 
+						         $this->line( $user->id );
 						         $user->notify( new ImportantDate( $event ) );
 
 					         } );
