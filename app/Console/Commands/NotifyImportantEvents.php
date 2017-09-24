@@ -6,6 +6,7 @@ use App\Calendar;
 use App\Event;
 use App\Notifications\ImportantDate;
 use App\User;
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 
 class NotifyImportantEvents extends Command
@@ -49,9 +50,12 @@ class NotifyImportantEvents extends Command
 				$date     = $calendar->current_date;
 				$timezone = $calendar->timezone;
 
+				$date = Carbon::parse($date);
+
 				Event::with( [ 'organization_location.organization', 'category' ] )
 				     ->where( 'is_system_event', 1 )
-				     ->where( 'hijri_date', $date )
+				     ->whereDay( 'hijri_date', $date->day )
+				     ->whereMonth( 'hijri_date', $date->month )
 				     ->each( function ( $event ) use ( &$timezone ) {
 					     $this->line( $timezone );
 					     User::where( 'timezone', $timezone )
