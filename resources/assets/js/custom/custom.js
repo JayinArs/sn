@@ -49,7 +49,7 @@
                 var date = new Date(ms);
                 var months = window.custom.islamic_months;
 
-                return date.getDate() + ' ' + months[date.getMonth()] + ' ' + date.getFullYear();
+                return date.getDate() + ' ' + months[date.getMonth()];
             };
 
             window.custom.messages = {

@@ -41,8 +41,12 @@ class CalendarHelper
 	 *
 	 * @return string
 	 */
-	public function parse( $month, $day, $year )
+	public function parse( $month, $day, $year = false )
 	{
+		if ( ! $year ) {
+			$year = date( 'Y' );
+		}
+
 		$str = $year . '-' . $month . '-' . $day;
 
 		return Carbon::parse( $str );

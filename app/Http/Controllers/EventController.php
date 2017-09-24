@@ -90,8 +90,7 @@ class EventController extends Controller
 			"category"      => "required",
 			"title"         => "required",
 			"islamic.month" => "required",
-			"islamic.day"   => "required",
-			"islamic.year"  => "required"
+			"islamic.day"   => "required"
 		];
 
 		$validator = Validator::make( $request->all(), $validation_rules );
@@ -106,7 +105,7 @@ class EventController extends Controller
 			                         ] );
 		}
 
-		$date     = Hijri::parse( $request->input( 'islamic.month' ), $request->input( 'islamic.day' ), $request->input( 'islamic.year' ) );
+		$date     = Hijri::parse( $request->input( 'islamic.month' ), $request->input( 'islamic.day' ) );
 		$category = $request->input( 'category' );
 
 		if ( $category == 'other' ) {
@@ -209,7 +208,7 @@ class EventController extends Controller
 			                         ] );
 		}
 
-		$date     = Hijri::parse( $request->input( 'islamic.month' ), $request->input( 'islamic.day' ), $request->input( 'islamic.year' ) );
+		$date     = Hijri::parse( $request->input( 'islamic.month' ), $request->input( 'islamic.day' ) );
 		$category = $request->input( 'category' );
 
 		if ( $category == 'other' ) {
