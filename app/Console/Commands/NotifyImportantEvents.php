@@ -15,7 +15,7 @@ class NotifyImportantEvents extends Command
 	 *
 	 * @var string
 	 */
-	protected $signature = 'event:notify {--s|system} {--t|timezone=} {date}';
+	protected $signature = 'event:notify {--s|system} {--t|timezone=} {date?}';
 
 	/**
 	 * The console command description.
