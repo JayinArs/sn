@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Calendar;
 use App\Event;
 use App\Notifications\ImportantDate;
 use App\User;
@@ -43,18 +44,39 @@ class NotifyImportantEvents extends Command
 		$timezone = $this->option( 'timezone' );
 		$date     = $this->argument( 'date' );
 
-		Event::with( [ 'organization_location.organization', 'category' ] )
-		     ->where( 'is_system_event', 1 )
-		     ->where( 'hijri_date', $date )
-		     ->each( function ( $event ) use ( &$timezone ) {
+		if ( ! $date && ! $timezone ) {
+			Calendar::all()->each( function ( $calendar ) {
+				$date     = $calendar->current_date;
+				$timezone = $calendar->timezone;
 
-			     User::where( 'timezone', $timezone )
-			         ->each( function ( $user ) use ( &$event ) {
+				Event::with( [ 'organization_location.organization', 'category' ] )
+				     ->where( 'is_system_event', 1 )
+				     ->where( 'hijri_date', $date )
+				     ->each( function ( $event ) use ( &$timezone ) {
 
-				         $user->notify( new ImportantDate( $event ) );
+					     User::where( 'timezone', $timezone )
+					         ->each( function ( $user ) use ( &$event ) {
 
-			         } );
-			     $this->info( "Notified: {$event->title}" );
-		     } );
+						         $user->notify( new ImportantDate( $event ) );
+
+					         } );
+					     $this->info( "Notified: {$event->title}" );
+				     } );
+			} );
+		} else {
+			Event::with( [ 'organization_location.organization', 'category' ] )
+			     ->where( 'is_system_event', 1 )
+			     ->where( 'hijri_date', $date )
+			     ->each( function ( $event ) use ( &$timezone ) {
+
+				     User::where( 'timezone', $timezone )
+				         ->each( function ( $user ) use ( &$event ) {
+
+					         $user->notify( new ImportantDate( $event ) );
+
+				         } );
+				     $this->info( "Notified: {$event->title}" );
+			     } );
+		}
 	}
 }

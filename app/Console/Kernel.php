@@ -32,6 +32,7 @@ class Kernel extends ConsoleKernel
 		//          ->hourly();
 		//$schedule->command( 'command:test' )->everyMinute();
 		$schedule->command( 'calendar:update' )->everyTenMinutes();
+		$schedule->command( 'event:notify' )->everyMinute();
 	}
 
 	/**
