@@ -20,6 +20,9 @@ class PushNotificationHelper
 
 	}
 
+	/**
+	 * @param Event $event
+	 */
 	private function push_event( Event $event )
 	{
 		Artisan::call( "event:add", [
@@ -27,6 +30,9 @@ class PushNotificationHelper
 		] );
 	}
 
+	/**
+	 * @param $args
+	 */
 	private function push_system_events( $args )
 	{
 		Artisan::call( "event:notify", [
@@ -36,6 +42,10 @@ class PushNotificationHelper
 		] );
 	}
 
+	/**
+	 * @param $type
+	 * @param $args
+	 */
 	public function notify( $type, $args )
 	{
 		switch ( $type ) {

@@ -16,7 +16,7 @@ class NotifyImportantEvents extends Command
 	 *
 	 * @var string
 	 */
-	protected $signature = 'event:notify {--s|system} {--t|timezone=} {date?}';
+	protected $signature = 'event:notify {--s|system} {--t|timezone=} {date}';
 
 	/**
 	 * The console command description.
@@ -45,45 +45,21 @@ class NotifyImportantEvents extends Command
 		$timezone = $this->option( 'timezone' );
 		$date     = $this->argument( 'date' );
 
-		if ( ! $date && ! $timezone ) {
-			Calendar::all()->each( function ( $calendar ) {
-				$date     = $calendar->current_date;
-				$timezone = $calendar->timezone;
+		$date = Carbon::parse( $date );
 
-				$date = Carbon::parse( $date );
+		Event::with( [ 'organization_location.organization', 'category' ] )
+		     ->where( 'is_system_event', 1 )
+		     ->whereDay( 'hijri_date', $date->day )
+		     ->whereMonth( 'hijri_date', $date->month )
+		     ->each( function ( $event ) use ( &$timezone ) {
 
-				Event::with( [ 'organization_location.organization', 'category' ] )
-				     ->where( 'is_system_event', 1 )
-				     ->whereDay( 'hijri_date', $date->day )
-				     ->whereMonth( 'hijri_date', $date->month )
-				     ->each( function ( $event ) use ( &$timezone ) {
+			     User::where( 'timezone', $timezone )
+			         ->each( function ( $user ) use ( &$event ) {
 
-					     User::where( 'timezone', $timezone )
-					         ->each( function ( $user ) use ( &$event ) {
+				         $user->notify( new ImportantDate( $event ) );
 
-						         $user->notify( new ImportantDate( $event ) );
-
-					         } );
-					     $this->info( "Notified: {$event->title}" );
-				     } );
-			} );
-		} else {
-			$date = Carbon::parse( $date );
-
-			Event::with( [ 'organization_location.organization', 'category' ] )
-			     ->where( 'is_system_event', 1 )
-			     ->whereDay( 'hijri_date', $date->day )
-			     ->whereMonth( 'hijri_date', $date->month )
-			     ->each( function ( $event ) use ( &$timezone ) {
-
-				     User::where( 'timezone', $timezone )
-				         ->each( function ( $user ) use ( &$event ) {
-
-					         $user->notify( new ImportantDate( $event ) );
-
-				         } );
-				     $this->info( "Notified: {$event->title}" );
-			     } );
-		}
+			         } );
+			     $this->info( "Notified: {$event->title}" );
+		     } );
 	}
 }
