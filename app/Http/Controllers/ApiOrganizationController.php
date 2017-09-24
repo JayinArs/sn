@@ -291,11 +291,12 @@ class ApiOrganizationController extends Controller
 	{
 		$events = [];
 
-		$organization = Organization::with( 'locations' )->find( $organization_id );
+		$organization = Organization::find( $organization_id );
 
 		foreach ( $organization->locations as $location ) {
 			Event::with( [
 				             'meta_data',
+				             'organization_location'
 			             ] )->where( 'organization_location_id', $location->id )->each( function ( $event ) use ( &$events, &$organization ) {
 				$event                 = $event->toArray();
 				$event['organization'] = $organization;
