@@ -32,15 +32,6 @@ class EventMeta extends Model
 	protected $table = 'event_meta';
 	public $timestamps = false;
 
-	protected static function boot()
-	{
-		parent::boot();
-
-		static::addGlobalScope( 'results', function ( Builder $builder ) {
-			$builder->get( [ $builder->value( 'key' ), $builder->value( 'value' ) ] );
-		} );
-	}
-
 	/**
 	 * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
 	 */
