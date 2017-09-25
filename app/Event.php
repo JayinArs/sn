@@ -12,7 +12,18 @@ class Event extends Model
 	 * @var array
 	 */
 	protected $fillable = [
-		'title', 'english_date', 'hijri_date', 'start_time', 'end_time', 'is_system_event', 'organization_location_id', 'user_id', 'account_id', 'category_id', 'venue'
+		'title',
+		'english_date',
+		'hijri_date',
+		'start_time',
+		'end_time',
+		'is_system_event',
+		'organization_location_id',
+		'user_id',
+		'account_id',
+		'category_id',
+		'venue',
+		'meta_data'
 	];
 
 	protected $table = 'events';
@@ -23,7 +34,7 @@ class Event extends Model
 	 */
 	public function organization_location()
 	{
-		return $this->belongsTo('App\OrganizationLocation', 'organization_location_id');
+		return $this->belongsTo( 'App\OrganizationLocation', 'organization_location_id' );
 	}
 
 	/**
@@ -31,7 +42,7 @@ class Event extends Model
 	 */
 	public function user()
 	{
-		return $this->belongsTo('App\User', 'user_id');
+		return $this->belongsTo( 'App\User', 'user_id' );
 	}
 
 	/**
@@ -39,7 +50,7 @@ class Event extends Model
 	 */
 	public function account()
 	{
-		return $this->belongsTo('App\Account', 'account_id');
+		return $this->belongsTo( 'App\Account', 'account_id' );
 	}
 
 	/**
@@ -47,7 +58,7 @@ class Event extends Model
 	 */
 	public function category()
 	{
-		return $this->belongsTo('App\EventCategory', 'category_id');
+		return $this->belongsTo( 'App\EventCategory', 'category_id' );
 	}
 
 	/**
@@ -55,6 +66,14 @@ class Event extends Model
 	 */
 	public function meta_data()
 	{
-		return $this->hasMany('App\EventMeta', 'event_id', 'id');
+		return $this->hasMany( 'App\EventMeta', 'event_id', 'id' );
+	}
+
+	/**
+	 * @return array
+	 */
+	public static function getMetaKeys()
+	{
+		return [ 'latitude', 'longitude' ];
 	}
 }

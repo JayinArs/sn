@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Calendar;
 use App\Event;
+use App\EventMeta;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
@@ -53,6 +54,18 @@ class ApiEventController extends Controller
 		                        ] );
 
 		if ( $event->id > 0 ) {
+			$meta_keys = Event::getMetaKeys();
+
+			foreach ( $meta_keys as $key ) {
+				if ( $request->has( $key ) ) {
+					EventMeta::create( [
+						                   'event_id' => $event->id,
+						                   'key'      => $key,
+						                   'value'    => $request->input( $key )
+					                   ] );
+				}
+			}
+
 			PushNotification::notify( 'event', $event );
 
 			return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), $event );
@@ -107,7 +120,7 @@ class ApiEventController extends Controller
 		$calendar = Calendar::where( 'timezone', $timezone )->first();
 		$date     = Carbon::parse( $calendar->current_date );
 
-		$events = Event::with( [ 'organization_location.organization', 'category' ] )
+		$events = Event::with( [ 'category' ] )
 		               ->where( 'is_system_event', 1 )
 		               ->whereDay( 'hijri_date', $date->day )
 		               ->whereMonth( 'hijri_date', $date->month )
