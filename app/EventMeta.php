@@ -2,7 +2,9 @@
 
 namespace App;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class EventMeta extends Model
 {
@@ -12,7 +14,9 @@ class EventMeta extends Model
 	 * @var array
 	 */
 	protected $fillable = [
-		'event_id', 'key', 'value'
+		'event_id',
+		'key',
+		'value'
 	];
 
 	/**
@@ -21,17 +25,27 @@ class EventMeta extends Model
 	 * @var array
 	 */
 	protected $hidden = [
-		'event_id', 'id'
+		'event_id',
+		'id'
 	];
 
 	protected $table = 'event_meta';
 	public $timestamps = false;
+
+	protected static function boot()
+	{
+		parent::boot();
+
+		static::addGlobalScope( 'results', function ( Builder $builder ) {
+			$builder->get( [ $builder->value( 'key' ), $builder->value( 'value' ) ] );
+		} );
+	}
 
 	/**
 	 * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
 	 */
 	public function event()
 	{
-		return $this->belongsTo('App\Event', 'event_id');
+		return $this->belongsTo( 'App\Event', 'event_id' );
 	}
 }
