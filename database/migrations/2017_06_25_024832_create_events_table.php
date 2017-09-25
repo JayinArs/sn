@@ -27,6 +27,8 @@ class CreateEventsTable extends Migration
 		    $table->integer('account_id')->unsigned();
 		    $table->integer('category_id')->unsigned()->nullable();
 		    $table->string('venue')->nullable();
+		    $table->string('latitude')->nullable();
+		    $table->string('longitude')->nullable();
 
 		    $table->foreign('organization_location_id')->references('id')->on('organization_locations')->onDelete('cascade');
 		    $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

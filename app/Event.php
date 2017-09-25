@@ -23,7 +23,9 @@ class Event extends Model
 		'account_id',
 		'category_id',
 		'venue',
-		'meta_data'
+		'meta_data',
+		'latitude',
+		'longitude'
 	];
 
 	protected $table = 'events';
@@ -74,6 +76,6 @@ class Event extends Model
 	 */
 	public static function getMetaKeys()
 	{
-		return [ 'latitude', 'longitude' ];
+		return [];
 	}
 }

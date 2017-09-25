@@ -6,8 +6,10 @@ use App\Calendar;
 use App\Event;
 use App\EventMeta;
 use Carbon\Carbon;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
 use Validator;
 use JSONResponse;
 use MultiLang;
@@ -50,7 +52,9 @@ class ApiEventController extends Controller
 			                        'end_time'                 => $request->input( 'end_time', $request->input( 'start_time' ) ),
 			                        'english_date'             => $request->input( 'english_date' ),
 			                        'hijri_date'               => $request->input( 'hijri_date' ),
-			                        'venue'                    => $request->input( 'venue' )
+			                        'venue'                    => $request->input( 'venue' ),
+			                        'latitude'                 => $request->input( 'latitude' ),
+			                        'longitude'                => $request->input( 'longitude' )
 		                        ] );
 
 		if ( $event->id > 0 ) {
@@ -127,5 +131,45 @@ class ApiEventController extends Controller
 		               ->get();
 
 		return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), $events );
+	}
+
+	public function getNearByEvents( Request $request )
+	{
+		$validation_rules = [
+			'latitude'  => 'required',
+			'longitude' => 'required'
+		];
+
+		$validator = Validator::make( $request->all(), $validation_rules );
+		$messages  = $validator->messages()->all();
+
+		if ( $validator->fails() ) {
+			return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.FAILED' ), null, MultiLang::getPhrase( $messages[0] ) );
+		}
+
+		$latitude  = $request->input( 'latitude' );
+		$longitude = $request->input( 'longitude' );
+		$radius    = $request->input( 'radius' );
+
+		if ( ! $request->has( 'radius' ) ) {
+			$radius = 50;
+		}
+
+		//$sql    = "SELECT id, ( 3959 * acos( cos( radians(37) ) * cos( radians( lat ) ) * cos( radians( lng ) - radians(-122) ) + sin( radians(37) ) * sin( radians( lat ) ) ) ) AS distance FROM markers HAVING distance < 25 ORDER BY distance LIMIT 0 , 20;";
+		$select = "( 3959 * acos( cos( radians({$latitude}) ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians({$longitude}) ) + sin( radians({$latitude}) ) * sin( radians( latitude ) ) ) )";
+		$events = Event::selectRaw( "*, {$select} AS `distance`" )
+		               ->orderBy( 'distance', 'desc' )
+		               ->whereRaw( "{$select} < {$radius}" );
+		while ( $events->count() < 1 ) {
+			$radius += 1;
+			$events = Event::selectRaw( "*, {$select} AS `distance`" )
+			               ->orderBy( 'distance', 'desc' )
+			               ->whereRaw( "{$select} < {$radius}" );
+		}
+
+		return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), [
+			"events" => $events->get(),
+			"radius" => $radius
+		] );
 	}
 }
