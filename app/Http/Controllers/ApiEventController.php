@@ -160,7 +160,7 @@ class ApiEventController extends Controller
 		$events = Event::selectRaw( "*, {$select} AS `distance`" )
 		               ->orderBy( 'distance', 'desc' )
 		               ->whereRaw( "{$select} < {$radius}" );
-		while ( $events->count() < 1 ) {
+		while ( $events->count() < 1 && $radius < 10 ) {
 			$radius += 1;
 			$events = Event::selectRaw( "*, {$select} AS `distance`" )
 			               ->orderBy( 'distance', 'desc' )
