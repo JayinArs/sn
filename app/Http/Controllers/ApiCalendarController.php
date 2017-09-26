@@ -97,6 +97,10 @@ class ApiCalendarController extends Controller
 		$timezone = $request->input( 'timezone' );
 		$calendar = Calendar::where( 'timezone', $timezone );
 
-		return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), $calendar );
+		if ( $calendar->count() <= 0 ) {
+			return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.FAILED' ), null );
+		}
+
+		return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), $calendar->first() );
 	}
 }
