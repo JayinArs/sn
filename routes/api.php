@@ -118,6 +118,7 @@ Route::group( [ 'prefix' => 'v1', 'middleware' => 'token' ], function () {
 		Route::post( 'create', 'ApiCalendarController@create' )->name( 'calendar.create' );
 		Route::post( 'update', 'ApiCalendarController@update' )->name( 'calendar.update' );
 		Route::get( 'all', 'ApiCalendarController@all' )->name( 'calendar.all' );
+		Route::get( 'get', 'ApiCalendarController@get' )->name( 'calendar.get' );
 	} );
 } );
 

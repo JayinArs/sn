@@ -16,6 +16,9 @@ use Hijri;
 
 class ApiCalendarController extends Controller
 {
+	/**
+	 * @return mixed
+	 */
 	public function all()
 	{
 		$calendars = Calendar::all();
@@ -71,5 +74,29 @@ class ApiCalendarController extends Controller
 		Artisan::call( 'calendar:update' );
 
 		return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), null );
+	}
+
+	/**
+	 * @param Request $request
+	 *
+	 * @return mixed
+	 */
+	public function get( Request $request )
+	{
+		$validation_rules = [
+			'timezone' => 'required'
+		];
+
+		$validator = Validator::make( $request->all(), $validation_rules );
+		$messages  = $validator->messages()->all();
+
+		if ( $validator->fails() ) {
+			return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.FAILED' ), null, MultiLang::getPhrase( $messages[0] ) );
+		}
+
+		$timezone = $request->input( 'timezone' );
+		$calendar = Calendar::where( 'timezone', $timezone );
+
+		return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), $calendar );
 	}
 }
