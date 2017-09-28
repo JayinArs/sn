@@ -70,7 +70,7 @@ class ApiEventController extends Controller
 				}
 			}
 
-			PushNotification::notify( 'event', $event );
+			//PushNotification::notify( 'event', $event );
 
 			return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), $event );
 		} else {

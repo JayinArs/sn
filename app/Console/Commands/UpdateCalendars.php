@@ -55,7 +55,7 @@ class UpdateCalendars extends Command
 					        $last_updated->addDay();
 					        $next_time->setDate( $last_updated->year, $last_updated->month, $last_updated->day );
 				        }
-				        
+
 				        if ( $current_time->diffInMinutes( $next_time, false ) <= 0 ) {
 					        $current_time->addDay();
 
