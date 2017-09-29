@@ -32,9 +32,9 @@ class GeocodeHelper
 		curl_close( $ch );
 
 		$response = json_decode( $output, true );
-		var_dump($response['results']);exit;
-		if ( ! empty( $response['results']['geometry']['location'] ) ) {
-			return $response['results']['geometry']['location'];
+		
+		if ( ! empty( $response['results'][0]['geometry']['location'] ) ) {
+			return $response['results'][0]['geometry']['location'];
 		}
 
 		return false;
