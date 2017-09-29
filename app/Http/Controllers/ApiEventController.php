@@ -14,6 +14,7 @@ use Validator;
 use JSONResponse;
 use MultiLang;
 use PushNotification;
+use Geocode;
 
 class ApiEventController extends Controller
 {
@@ -40,6 +41,11 @@ class ApiEventController extends Controller
 
 		if ( $validator->fails() ) {
 			return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.FAILED' ), null, MultiLang::getPhrase( $messages[0] ) );
+		}
+
+		if($request->has('venue') && !empty($request->input('venue'))) {
+			var_dump(Geocode::coordinatesLookup($request->input('venue')));
+			exit;
 		}
 
 		$event = Event::create( [

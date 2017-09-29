@@ -1,14 +1,15 @@
 <?php
 
 return [
-	"HTTP_CODES"  => [
+	"HTTP_CODES"     => [
 		"UNAUTHORIZED"   => 401,
 		"NOT_FOUND"      => 404,
 		"INTERNAL_ERROR" => 500,
 		"SUCCESS"        => 200,
 		"FAILED"         => 403
 	],
-	'navigations' => [
+	'google_api_key' => 'AIzaSyCYTnHv1sYw3ikSbhgU7BPccKZAT_Ook64',
+	'navigations'    => [
 		[ 'label' => 'Main', 'item_type' => 'heading' ],
 		[ 'label' => 'Dashboard', 'action' => 'admin/dashboard', 'icon' => 'icon-speedometer', 'item_type' => 'item' ],
 		[
@@ -34,7 +35,7 @@ return [
 			]
 		]
 	],
-	'hijri'       => [
+	'hijri'          => [
 		'months' => [
 			'Muharram',
 			'Safar',
@@ -50,7 +51,7 @@ return [
 			'Zul-Hijjah'
 		]
 	],
-	'english'     => [
+	'english'        => [
 		'months' => [
 			'January',
 			'February',
@@ -66,7 +67,7 @@ return [
 			'December'
 		]
 	],
-	'cite'        => [
+	'cite'           => [
 		'Rasool\'Allah (S.A.W.W)'   => 'Rasool\'Allah (S.A.W.W)',
 		'Bibi Fatima (S.A)'         => 'Bibi Fatima (S.A)',
 		'Imam Ali (A.S)'            => 'Imam Ali (A.S)',

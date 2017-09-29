@@ -11,63 +11,69 @@ use App;
 
 class AppServiceProvider extends ServiceProvider
 {
-    /**
-     * Bootstrap any application services.
-     *
-     * @return void
-     */
-    public function boot()
-    {
-        //
-    }
+	/**
+	 * Bootstrap any application services.
+	 *
+	 * @return void
+	 */
+	public function boot()
+	{
+		//
+	}
 
-    /**
-     * Register any application services.
-     *
-     * @return void
-     */
-    public function register()
-    {
-        $this->app->singleton('token', function ($app) {
-            $token = new TokenHelper();
+	/**
+	 * Register any application services.
+	 *
+	 * @return void
+	 */
+	public function register()
+	{
+		$this->app->singleton( 'token', function ( $app ) {
+			$token = new TokenHelper();
 
-            return $token;
-        });
+			return $token;
+		} );
 
-        $this->app->singleton('response', function ($app) {
-            $response = new ResponseHelper();
+		$this->app->singleton( 'response', function ( $app ) {
+			$response = new ResponseHelper();
 
-            return $response;
-        });
+			return $response;
+		} );
 
-        $this->app->singleton('language', function ($app) {
-            $lang = new LanguageHelper();
+		$this->app->singleton( 'language', function ( $app ) {
+			$lang = new LanguageHelper();
 
-            return $lang;
-        });
+			return $lang;
+		} );
 
-        $this->app->singleton('dashboard', function ($app) {
-            $dashboard = new DashboardHelper();
+		$this->app->singleton( 'dashboard', function ( $app ) {
+			$dashboard = new DashboardHelper();
 
-            return $dashboard;
-        });
+			return $dashboard;
+		} );
 
-	    $this->app->singleton('element', function ($app) {
-		    $element = new App\Helpers\ElementHelper();
+		$this->app->singleton( 'element', function ( $app ) {
+			$element = new App\Helpers\ElementHelper();
 
-		    return $element;
-	    });
+			return $element;
+		} );
 
-	    $this->app->singleton('calendar', function ($app) {
-		    $calendar = new App\Helpers\CalendarHelper();
+		$this->app->singleton( 'calendar', function ( $app ) {
+			$calendar = new App\Helpers\CalendarHelper();
 
-		    return $calendar;
-	    });
+			return $calendar;
+		} );
 
-	    $this->app->singleton('push_notification', function ($app) {
-		    $push = new App\Helpers\PushNotificationHelper();
+		$this->app->singleton( 'push_notification', function ( $app ) {
+			$push = new App\Helpers\PushNotificationHelper();
 
-		    return $push;
-	    });
-    }
+			return $push;
+		} );
+
+		$this->app->singleton( 'geocode', function ( $app ) {
+			$geocode = new App\Helpers\GeocodeHelper();
+
+			return $geocode;
+		} );
+	}
 }

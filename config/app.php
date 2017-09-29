@@ -245,7 +245,8 @@ return [
         'Element' => App\Facades\ElementFacade::class,
         'Dashboard' => App\Facades\DashboardFacade::class,
 	    'Hijri' => App\Facades\CalendarFacade::class,
-	    'PushNotification' => App\Facades\PushNotificationFacade::class
+	    'PushNotification' => App\Facades\PushNotificationFacade::class,
+	    'Geocode' => App\Facades\GeocodeFacade::class
 
     ],
 
