@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Calendar;
 use App\Event;
 use App\EventMeta;
+use App\OrganizationLocation;
 use Carbon\Carbon;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
@@ -46,7 +47,15 @@ class ApiEventController extends Controller
 		$latitude = $longitude = null;
 
 		if ( $request->has( 'venue' ) && ! empty( $request->input( 'venue' ) ) ) {
-			$coordinates = Geocode::coordinatesLookup( $request->input( 'venue' ) );
+			$organization_location = OrganizationLocation::find( $request->input( 'organization_location_id' ) );
+			$city_state            = $organization_location->city;
+			$country               = $organization_location->country;
+
+			if ( ! $city_state ) {
+				$city_state = $organization_location->state;
+			}
+
+			$coordinates = Geocode::coordinatesLookup( $request->input( 'venue' ) . ', ' . $city_state . ', ' . $country );
 
 			if ( $coordinates ) {
 				$latitude  = $coordinates['lat'];
