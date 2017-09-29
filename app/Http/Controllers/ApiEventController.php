@@ -43,9 +43,15 @@ class ApiEventController extends Controller
 			return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.FAILED' ), null, MultiLang::getPhrase( $messages[0] ) );
 		}
 
-		if($request->has('venue') && !empty($request->input('venue'))) {
-			var_dump(Geocode::coordinatesLookup($request->input('venue')));
-			exit;
+		$latitude = $longitude = null;
+
+		if ( $request->has( 'venue' ) && ! empty( $request->input( 'venue' ) ) ) {
+			$coordinates = Geocode::coordinatesLookup( $request->input( 'venue' ) );
+
+			if ( $coordinates ) {
+				$latitude  = $coordinates['lat'];
+				$longitude = $coordinates['lng'];
+			}
 		}
 
 		$event = Event::create( [
@@ -59,8 +65,8 @@ class ApiEventController extends Controller
 			                        'english_date'             => $request->input( 'english_date' ),
 			                        'hijri_date'               => $request->input( 'hijri_date' ),
 			                        'venue'                    => $request->input( 'venue' ),
-			                        'latitude'                 => $request->input( 'latitude' ),
-			                        'longitude'                => $request->input( 'longitude' )
+			                        'latitude'                 => $latitude,
+			                        'longitude'                => $longitude
 		                        ] );
 
 		if ( $event->id > 0 ) {

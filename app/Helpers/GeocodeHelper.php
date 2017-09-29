@@ -19,17 +19,23 @@ class GeocodeHelper
 
 	public function coordinatesLookup( $address )
 	{
-		$api_url = 'https://maps.googleapis.com/maps/api/geocode/json?address=' . urlencode($address) . '&key=' . Config::get( 'constants.google_api_key' );
+		$api_url = 'https://maps.googleapis.com/maps/api/geocode/json?address=' . urlencode( $address ) . '&key=' . Config::get( 'constants.google_api_key' );
 
 		$ch = curl_init();
 
-		curl_setopt($ch, CURLOPT_URL, $api_url);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($ch, CURLOPT_HEADER, false);
+		curl_setopt( $ch, CURLOPT_URL, $api_url );
+		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+		curl_setopt( $ch, CURLOPT_HEADER, false );
 
-		$output = curl_exec($ch);
+		$output = curl_exec( $ch );
 
-		curl_close($ch);
-		var_dump($output);exit;
+		curl_close( $ch );
+
+		$response = json_decode( $output, true );
+		if ( $response['results']['geometry']['location'] ) {
+			return $response['results']['geometry']['location'];
+		}
+
+		return false;
 	}
 }
