@@ -13,6 +13,7 @@ use Validator;
 use JSONResponse;
 use MultiLang;
 use Hijri;
+use Geocode;
 
 class ApiCalendarController extends Controller
 {
@@ -34,8 +35,8 @@ class ApiCalendarController extends Controller
 	public function create( Request $request )
 	{
 		$validation_rules = [
-			'country'  => 'required',
-			'city'     => 'required|unique:calendars,city,NULL,id,country,' . $request->input( 'country' ),
+			//'country'  => 'required',
+			//'city'     => 'required|unique:calendars,city,NULL,id,country,' . $request->input( 'country' ),
 			'timezone' => 'required'
 		];
 
@@ -46,7 +47,26 @@ class ApiCalendarController extends Controller
 			return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.FAILED' ), null, MultiLang::getPhrase( $messages[0] ) );
 		}
 
-		$current_date = Hijri::getHijriDateByGeorgian( $request->input( 'timezone' ), $request->input( 'city' ), $request->input( 'country' ) );
+		$timezone = $request->input( 'timezone' );
+		$country  = $city = null;
+
+		$calendar = Calendar::where( 'timezone', $timezone )->first();
+
+		if ( $calendar ) {
+			return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), $calendar );
+		} else {
+			$region = Geocode::regionLookup( $timezone );
+
+			if ( ! empty( $region['country'] ) ) {
+				$country = $region['country'];
+			}
+
+			if ( ! empty( $region['locality'] ) ) {
+				$city = $region['locality'];
+			}
+		}
+		var_dump($city, $country);exit;
+		$current_date = Hijri::getHijriDateByGeorgian( $timezone, $city, $country );
 
 		if ( $current_date ) {
 			$calendar = Calendar::create( [
