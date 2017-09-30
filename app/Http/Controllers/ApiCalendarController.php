@@ -28,6 +28,46 @@ class ApiCalendarController extends Controller
 	}
 
 	/**
+	 * @param $timezone
+	 * @param bool $city
+	 * @param bool $country
+	 *
+	 * @return bool|\Illuminate\Database\Eloquent\Model
+	 */
+	private function create_calendar( $timezone, $city = false, $country = false )
+	{
+		if ( ! $city || ! $country ) {
+			$region = Geocode::regionLookup( $timezone );
+
+			if ( ! empty( $region['country'] ) ) {
+				$country = $region['country'];
+			}
+
+			if ( ! empty( $region['locality'] ) ) {
+				$city = $region['locality'];
+			}
+		}
+
+		if ( $city && $country ) {
+			$current_date = Hijri::getHijriDateByGeorgian( $timezone, $city, $country );
+
+			if ( $current_date ) {
+				$calendar = Calendar::create( [
+					                              'city'             => $city,
+					                              'country'          => $country,
+					                              'current_date'     => $current_date['date'],
+					                              'next_update_time' => $current_date['time'],
+					                              'timezone'         => $timezone
+				                              ] );
+
+				return $calendar;
+			}
+		}
+
+		return false;
+	}
+
+	/**
 	 * @param Request $request
 	 *
 	 * @return mixed
@@ -48,35 +88,14 @@ class ApiCalendarController extends Controller
 		}
 
 		$timezone = $request->input( 'timezone' );
-		$country  = $city = null;
-
 		$calendar = Calendar::where( 'timezone', $timezone )->first();
 
 		if ( $calendar ) {
 			return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), $calendar );
 		} else {
-			$region = Geocode::regionLookup( $timezone );
+			$calendar = $this->create_calendar( $timezone );
 
-			if ( ! empty( $region['country'] ) ) {
-				$country = $region['country'];
-			}
-
-			if ( ! empty( $region['locality'] ) ) {
-				$city = $region['locality'];
-			}
-		}
-		var_dump($city, $country);exit;
-		$current_date = Hijri::getHijriDateByGeorgian( $timezone, $city, $country );
-
-		if ( $current_date ) {
-			$calendar = Calendar::create( [
-				                              'city'             => $request->input( 'city' ),
-				                              'country'          => $request->input( 'country' ),
-				                              'current_date'     => $current_date['date'],
-				                              'next_update_time' => $current_date['time'],
-				                              'timezone'         => $request->input( 'timezone' )
-			                              ] );
-			if ( $calendar->id > 0 ) {
+			if ( $calendar && $calendar->id > 0 ) {
 				return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), $calendar );
 			}
 		}
@@ -115,12 +134,18 @@ class ApiCalendarController extends Controller
 		}
 
 		$timezone = $request->input( 'timezone' );
-		$calendar = Calendar::where( 'timezone', $timezone );
+		$calendar = Calendar::where( 'timezone', $timezone )->first();
 
-		if ( $calendar->count() <= 0 ) {
-			return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.FAILED' ), null );
+		if ( $calendar ) {
+			return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), $calendar );
+		} else {
+			$calendar = $this->create_calendar( $timezone );
+
+			if ( $calendar && $calendar->id > 0 ) {
+				return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), $calendar );
+			}
 		}
 
-		return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), $calendar->first() );
+		return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.FAILED' ), null );
 	}
 }
