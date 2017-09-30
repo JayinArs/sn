@@ -25,6 +25,8 @@ Route::get( '/admin/login', function () {
 	return redirect( 'login' );
 } );
 
+Route::get( '/privacy', 'HomeController@privacy');
+
 Route::group( [ 'prefix' => 'admin', 'middleware' => 'auth' ], function () {
 	Route::get( '/', 'HomeController@index' );
 	Route::get( '/dashboard', 'HomeController@index' )->name( 'dashboard' );

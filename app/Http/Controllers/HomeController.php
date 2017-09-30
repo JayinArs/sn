@@ -48,4 +48,12 @@ class HomeController extends Controller
 			'locations'        => $locations
 		] );
 	}
+
+	/**
+	 * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+	 */
+	public function privacy()
+	{
+		return view( 'privacy' );
+	}
 }
