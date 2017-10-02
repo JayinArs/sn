@@ -104,6 +104,22 @@ class ApiEventController extends Controller
 	 *
 	 * @return mixed
 	 */
+	public function getSingle( $id )
+	{
+		$event = Event::with( [ 'organization_location', 'organization_location.organization' ] )->find( $id );
+
+		if ( $event ) {
+			return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), $event );
+		}
+
+		return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.NOT_FOUND' ), null, MultiLang::getPhraseByKey( 'strings.event.not_found' ) );
+	}
+
+	/**
+	 * @param $id
+	 *
+	 * @return mixed
+	 */
 	public function delete( $id )
 	{
 		$deleted = false;

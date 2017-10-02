@@ -32,7 +32,7 @@
                         <div class="form-group">
                             <label class="col-md-1 col-sm-2 control-label">Hijri Date:</label>
                             <div class="col-md-11 col-sm-10">
-                                {!! Hijri::get_field($event->hijri_date) !!}
+                                {!! Hijri::get_field($event->hijri_date, false, false, false, false) !!}
                             </div>
                         </div>
                     </fieldset>

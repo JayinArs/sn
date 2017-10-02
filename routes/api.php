@@ -98,6 +98,7 @@ Route::group( [ 'prefix' => 'v1', 'middleware' => 'token' ], function () {
 	Route::group( [ 'prefix' => 'event' ], function () {
 		Route::post( 'all', 'ApiEventController@all' )->name( 'event.all' );
 		Route::post( 'create', 'ApiEventController@create' )->name( 'event.create' );
+		Route::get( '{event_id}', 'ApiEventController@getSingle' )->name( 'event.get' );
 		Route::get( 'today', 'ApiEventController@getSystemEvents' )->name( 'event.today' );
 		Route::get( 'nearby', 'ApiEventController@getNearByEvents' )->name( 'event.nearby' );
 		Route::delete( '{event_id}', 'ApiEventController@delete' )->name( 'event.delete' );

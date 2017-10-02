@@ -52,7 +52,18 @@ class CalendarHelper
 		return Carbon::parse( $str );
 	}
 
-	public function get_field( $date = false, $month = false, $day = false, $year = false )
+	/**
+	 * @param bool $date
+	 * @param bool $month
+	 * @param bool $day
+	 * @param bool $year
+	 * @param bool $show_year
+	 * @param bool $show_month
+	 * @param bool $show_day
+	 *
+	 * @return string
+	 */
+	public function get_field( $date = false, $month = false, $day = false, $year = false, $show_year = true, $show_month = true, $show_day = true )
 	{
 		$months_count = [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 ];
 		$months       = Config::get( 'constants.hijri.months' );
@@ -73,12 +84,21 @@ class CalendarHelper
 		}
 
 		$field = '<div class="row">';
-		$field .= '<div class="col-md-4">' . Form::text( 'islamic[year]', $year, [
-				'class'       => 'form-control',
-				'placeholder' => 'Year'
-			] ) . '</div>';
-		$field .= '<div class="col-md-4">' . Form::select( 'islamic[month]', $months, $month, [ 'class' => 'form-control' ] ) . '</div>';
-		$field .= '<div class="col-md-4">' . Form::select( 'islamic[day]', $days, $day, [ 'class' => 'form-control' ] ) . '</div>';
+		if ( $show_year ) {
+			$field .= '<div class="col-md-4">' . Form::text( 'islamic[year]', $year, [
+					'class'       => 'form-control',
+					'placeholder' => 'Year'
+				] ) . '</div>';
+		}
+
+		if ( $show_month ) {
+			$field .= '<div class="col-md-4">' . Form::select( 'islamic[month]', $months, $month, [ 'class' => 'form-control' ] ) . '</div>';
+		}
+
+		if ( $show_day ) {
+			$field .= '<div class="col-md-4">' . Form::select( 'islamic[day]', $days, $day, [ 'class' => 'form-control' ] ) . '</div>';
+		}
+
 		$field .= '</div>';
 
 		return $field;
