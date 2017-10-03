@@ -79,6 +79,7 @@ class EventDate extends Notification
 		                       ->subject( "Today's Event: {$this->event->title}'" )
 		                       ->body( "Dated: {$date}" )
 		                       ->setData( 'event_id', $this->event->id )
+		                       ->url( '14pearls://14pearls/event/' . $this->event->id )
 		                       ->button( $view_button );
 	}
 
