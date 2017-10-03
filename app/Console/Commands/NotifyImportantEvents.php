@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Calendar;
 use App\Event;
 use App\Notifications\EventCreated;
+use App\Notifications\EventDate;
 use App\Notifications\ImportantDate;
 use App\OrganizationFollower;
 use App\User;
@@ -95,7 +96,7 @@ class NotifyImportantEvents extends Command
 					                         ->each( function ( $follower ) use ( &$event, &$followers ) {
 						                         $followers ++;
 						                         try {
-							                         $follower->user->notify( new EventCreated( $event ) );
+							                         $follower->user->notify( new EventDate( $event ) );
 						                         } catch ( ClientException $e ) {
 							                         $followers --;
 						                         }
