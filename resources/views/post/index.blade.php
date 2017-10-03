@@ -38,8 +38,6 @@
 <script>
     $(function () {
         var $posts_table = $('#posts-table').DataTable({
-            processing: true,
-            serverSide: true,
             responsive: true,
             errMode: 'throw',
             ajax: '{{ route("post.data") }}',

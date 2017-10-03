@@ -49,7 +49,7 @@ $active_navigation = Dashboard::active_navigation();
     </section>
     <!-- Page footer-->
     <footer>
-        <span>&copy; {{ date('Y') }} - ShiaCircle</span>
+        <span>&copy; {{ date('Y') }} - 14 Pearls</span>
     </footer>
 </div>
 @yield('modals')

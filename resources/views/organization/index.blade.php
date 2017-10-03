@@ -40,8 +40,6 @@
 <script>
     $(function () {
         var $org_table = $('#organizations-table').DataTable({
-            processing: true,
-            serverSide: true,
             responsive: true,
             errMode: 'throw',
             ajax: '{{ route("organization.data") }}',
@@ -60,8 +58,10 @@
                     data: 'name'
                 },
                 {
-                    name: 'official',
-                    data: 'official'
+                    name: 'is_official',
+                    data: function (row) {
+                        return row.is_official ? 'Yes' : 'No';
+                    }
                 },
                 {
                     name: 'followers',
@@ -81,7 +81,7 @@
                     data: function (row) {
                         return '<div class="btn-group table-actions">' +
                             '<a data-id="' + row.id + '" data-action="delete" href="" class="btn btn-danger btn-sm"><i class="fa fa-trash"></i></a>' +
-                            '<a data-id="' + row.id + '" data-action="detail" href="'+window.custom.url+'/org/'+row.id+'/edit" class="btn btn-primary btn-sm"><i class="fa fa-pencil"></i></a>' +
+                            '<a data-id="' + row.id + '" data-action="detail" href="' + window.custom.url + '/org/' + row.id + '/edit" class="btn btn-primary btn-sm"><i class="fa fa-pencil"></i></a>' +
                             '</div>';
                     }
                 }

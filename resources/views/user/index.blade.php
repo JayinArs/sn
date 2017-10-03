@@ -41,8 +41,6 @@
 <script>
     $(function () {
         var $users_table = $('#users-table').DataTable({
-            processing: true,
-            serverSide: true,
             responsive: true,
             errMode: 'throw',
             ajax: '{{ route("user.data") }}',

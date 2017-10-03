@@ -7,7 +7,7 @@
             <a href="{{ url('/')}}" class="navbar-brand">
                 <div class="brand-logo">
                     <img src="/img/logo.png" alt="{{ config('app.name') }}" class="img-responsive hide">
-                    ShiaCircle
+                    14 Pearls
                 </div>
             </a>
         </div>

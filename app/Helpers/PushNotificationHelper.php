@@ -43,6 +43,17 @@ class PushNotificationHelper
 	}
 
 	/**
+	 * @param $args
+	 */
+	private function push_user_events( $args )
+	{
+		Artisan::call( "event:notify", [
+			'--timezone' => $args['timezone'],
+			'date'       => $args['date']
+		] );
+	}
+
+	/**
 	 * @param $type
 	 * @param $args
 	 */
@@ -54,6 +65,9 @@ class PushNotificationHelper
 				break;
 			case "system_events":
 				$this->push_system_events( $args );
+				break;
+			case "user_events":
+				$this->push_user_events( $args );
 				break;
 		}
 	}

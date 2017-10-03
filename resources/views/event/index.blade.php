@@ -39,8 +39,6 @@
 <script>
     $(function () {
         var $events_table = $('#events-table').DataTable({
-            processing: true,
-            serverSide: true,
             responsive: true,
             errMode: 'throw',
             ajax: '{{ ($is_system ? route('event.system.data') : route('event.data')) }}',

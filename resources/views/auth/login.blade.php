@@ -13,7 +13,7 @@
         <!-- START panel-->
         <div class="panel panel-dark panel-flat">
             <div class="panel-heading text-center">
-                <h3 class="m0">ShiaCircle</h3>
+                <h3 class="m0">14 Pearls</h3>
             </div>
             <div class="panel-body">
                 <p class="text-center pv">SIGN IN TO CONTINUE.</p>
