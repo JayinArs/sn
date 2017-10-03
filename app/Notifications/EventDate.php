@@ -78,6 +78,7 @@ class EventDate extends Notification
 		return OneSignalMessage::create()
 		                       ->subject( "Today's Event: {$this->event->title}'" )
 		                       ->body( "Dated: {$date}" )
+		                       ->setData( 'event_id', $this->event->id )
 		                       ->button( $view_button );
 	}
 
