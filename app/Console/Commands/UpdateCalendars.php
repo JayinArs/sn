@@ -53,8 +53,8 @@ class UpdateCalendars extends Command
 
 				        if ( ! $last_updated->isSameDay( $current_time ) ) {
 					        $last_updated->addDay();
-					        $next_time->setDate( $last_updated->year, $last_updated->month, $last_updated->day );
 				        }
+				        $next_time->setDate( $last_updated->year, $last_updated->month, $last_updated->day );
 
 				        if ( $current_time->diffInMinutes( $next_time, false ) <= 0 ) {
 					        $current_time->addDay();
@@ -73,12 +73,10 @@ class UpdateCalendars extends Command
 							        'date'     => $current_date['date']
 						        ] );
 
-						        /*
 						        PushNotification::notify( 'user_events', [
 							        'timezone' => $calendar->timezone,
 							        'date'     => $current_date['date']
 						        ] );
-						        */
 
 						        echo 'updated: ' . $current_date['date'] . '\n';
 					        }
