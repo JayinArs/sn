@@ -38,7 +38,7 @@ class CreateAccountsTable extends Migration
 					'role_id'  => \App\UserRole::getAdminRole()->id
 				],
 				[
-					'id'       => 1,
+					'id'       => 2,
 					'username' => 'contributor',
 					'email'    => 'contributor@14pearls.com',
 					'password' => bcrypt( 'unite999!' ),
