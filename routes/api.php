@@ -102,7 +102,7 @@ Route::group( [ 'prefix' => 'v1', 'middleware' => 'token' ], function () {
 		Route::get( 'today', 'ApiEventController@getSystemEvents' )->name( 'event.today' );
 		Route::get( 'nearby', 'ApiEventController@getNearByEvents' )->name( 'event.nearby' );
 		Route::delete( '{event_id}', 'ApiEventController@delete' )->name( 'event.delete' );
-		Route::put( '{event_id}', 'ApiEventController@update' )->name( 'event.update' );
+		Route::post( '{event_id}', 'ApiEventController@updateEvent' )->name( 'event.update' );
 	} );
 
 	/*

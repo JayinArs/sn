@@ -100,11 +100,12 @@ class ApiEventController extends Controller
 	}
 
 	/**
+	 * @param $id
 	 * @param Request $request
 	 *
 	 * @return mixed
 	 */
-	public function update( $id, Request $request )
+	public function updateEvent( $id, Request $request )
 	{
 		$event = Event::find( $id );
 
