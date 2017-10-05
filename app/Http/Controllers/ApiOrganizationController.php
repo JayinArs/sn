@@ -18,33 +18,33 @@ use MultiLang;
 class ApiOrganizationController extends Controller
 {
 	/**
-	 * @param null $user_id
+	 * @param null $account_id
 	 *
 	 * @return mixed
 	 */
-	public function all( $user_id = null )
+	public function all( $account_id = null )
 	{
 		$organizations = [];
 
 		Organization::with( [
 			                    'meta_data',
 			                    'locations'
-		                    ] )->each( function ( $organization ) use ( &$organizations, &$user_id ) {
+		                    ] )->each( function ( $organization ) use ( &$organizations, &$account_id ) {
 			$org = $organization->toArray();
 
 			$org['followers'] = $org['events'] = 0;
 
-			if ( $user_id ) {
+			if ( $account_id ) {
 				$org['is_following'] = false;
 			}
 
-			OrganizationLocation::where( 'organization_id', $organization->id )->each( function ( $location ) use ( &$org, &$user_id ) {
+			OrganizationLocation::where( 'organization_id', $organization->id )->each( function ( $location ) use ( &$org, &$account_id ) {
 				$org['followers'] += OrganizationFollower::where( 'organization_location_id', $location->id )->count();
 				$org['events']    += Event::where( 'organization_location_id', $location->id )->count();
 
-				if ( $user_id ) {
+				if ( $account_id ) {
 					$org['is_following'] = OrganizationFollower::where( 'organization_location_id', $location->id )
-					                                           ->where( 'user_id', $user_id )
+					                                           ->where( 'account_id', $account_id )
 					                                           ->exists();
 				}
 			} );
@@ -57,28 +57,28 @@ class ApiOrganizationController extends Controller
 
 	/**
 	 * @param $id
-	 * @param null $user_id
+	 * @param null $account_id
 	 *
 	 * @return mixed
 	 */
-	public function getSingleOrganization( $id, $user_id = null )
+	public function getSingleOrganization( $id, $account_id = null )
 	{
 		$organization = Organization::with( [ 'meta_data', 'locations' ] )->find( $id );
 		$org          = $organization->toArray();
 
 		$org['followers'] = $org['events'] = 0;
 
-		if ( $user_id ) {
+		if ( $account_id ) {
 			$org['is_following'] = false;
 		}
 
-		OrganizationLocation::where( 'organization_id', $organization->id )->each( function ( $location ) use ( &$org, &$user_id ) {
+		OrganizationLocation::where( 'organization_id', $organization->id )->each( function ( $location ) use ( &$org, &$account_id ) {
 			$org['followers'] += OrganizationFollower::where( 'organization_location_id', $location->id )->count();
 			$org['events']    += Event::where( 'organization_location_id', $location->id )->count();
 
-			if ( $user_id ) {
+			if ( $account_id ) {
 				$org['is_following'] = OrganizationFollower::where( 'organization_location_id', $location->id )
-				                                           ->where( 'user_id', $user_id )
+				                                           ->where( 'account_id', $account_id )
 				                                           ->exists();
 			}
 		} );

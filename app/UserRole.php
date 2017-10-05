@@ -23,6 +23,22 @@ class UserRole extends Model
 	 */
 	public static function getDefaultRole()
 	{
-		return UserRole::where('name', 'subscriber')->get()->first();
+		return UserRole::where( 'name', 'subscriber' )->get()->first();
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public static function getAdminRole()
+	{
+		return UserRole::where( 'name', 'administrator' )->get()->first();
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public static function getContributorRole()
+	{
+		return UserRole::where( 'name', 'contributor' )->get()->first();
 	}
 }

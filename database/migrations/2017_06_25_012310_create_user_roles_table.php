@@ -28,6 +28,10 @@ class CreateUserRolesTable extends Migration
 			    [
 				    'id'    => 2,
 				    'name'  => 'subscriber'
+			    ],
+			    [
+				    'id'    => 3,
+				    'name'  => 'contributor'
 			    ]
 		    )
 	    );

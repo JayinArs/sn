@@ -29,7 +29,7 @@ class PostController extends Controller
 	 */
 	public function data()
 	{
-		return Datatables::of( Post::with('account')->get() )->make( true );
+		return Datatables::of( Post::with( 'account' )->get() )->make( true );
 	}
 
 	/**

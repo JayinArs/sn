@@ -35,7 +35,6 @@ Route::group( [ 'prefix' => 'v1', 'middleware' => 'token' ], function () {
 		Route::get( '{user_id}', 'ApiUserController@getUserById' )->name( 'user.get' );
 		Route::delete( '{user_id}', 'ApiUserController@deleteUserById' )->name( 'user.delete' );
 		Route::post( '{user_id}/update', 'ApiUserController@updateUserById' )->name( 'user.update' );
-		Route::get( '{user_id}/organizations/following', 'ApiUserController@userFollowingOrganizations' )->name( 'user.organizations.following' );
 	} );
 
 	/*
@@ -48,6 +47,7 @@ Route::group( [ 'prefix' => 'v1', 'middleware' => 'token' ], function () {
 		Route::post( '{account_id}/update', 'AccountController@updateAccountById' )->name( 'account.update' );
 		Route::delete( '{account_id}', 'AccountController@deleteAccountById' )->name( 'account.delete' );
 		Route::get( '{account_id}/organizations', 'AccountController@accountOrganizations' )->name( 'account.organizations' );
+		Route::get( '{account_id}/organizations/following', 'AccountController@accountFollowingOrganizations' )->name( 'account.organizations.following' );
 	} );
 
 	/*

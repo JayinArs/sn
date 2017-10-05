@@ -12,7 +12,7 @@ class OrganizationFollower extends Model
 	 * @var array
 	 */
 	protected $fillable = [
-		'organization_location_id', 'user_id'
+		'organization_location_id', 'account_id'
 	];
 
 	protected $table = 'organization_followers';
@@ -31,6 +31,6 @@ class OrganizationFollower extends Model
 	 */
 	public function user()
 	{
-		return $this->belongsTo('App\User', 'user_id');
+		return $this->belongsTo('App\Account', 'account_id');
 	}
 }

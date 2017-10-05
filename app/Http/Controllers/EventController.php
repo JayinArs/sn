@@ -192,8 +192,7 @@ class EventController extends Controller
 			"category"      => "required",
 			"title"         => "required",
 			"islamic.month" => "required",
-			"islamic.day"   => "required",
-			"islamic.year"  => "required"
+			"islamic.day"   => "required"
 		];
 
 		$validator = Validator::make( $request->all(), $validation_rules );

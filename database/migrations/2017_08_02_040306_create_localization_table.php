@@ -16,7 +16,7 @@ class CreateLocalizationTable extends Migration
 		Schema::create( 'localization', function ( Blueprint $table ) {
 			$table->increments( 'id' );
 			$table->string( 'item_type' );
-			$table->longText( 'item_value' );
+			$table->longText( 'item_value' )->nullable();
 			$table->integer( 'item_id' );
 			$table->integer( 'language_id' )->unsigned();
 

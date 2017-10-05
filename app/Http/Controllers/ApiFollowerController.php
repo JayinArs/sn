@@ -12,15 +12,17 @@ use JSONResponse;
 use Validator;
 use MultiLang;
 
-class ApiFollowerController extends Controller {
+class ApiFollowerController extends Controller
+{
 	/**
 	 * @param Request $request
 	 *
 	 * @return mixed
 	 */
-	public function add( Request $request ) {
+	public function add( Request $request )
+	{
 		$validation_rules = [
-			'user_id'                   => 'required|exists:users,id',
+			'account_id'                => 'required|exists:accounts,id',
 			'organization_location_ids' => 'required|exists:organization_locations,id'
 		];
 
@@ -36,13 +38,13 @@ class ApiFollowerController extends Controller {
 			$status[ $location_id ] = false;
 
 			if ( ! OrganizationFollower::where( 'organization_location_id', $location_id )
-			                           ->where( 'user_id', $request->input( 'user_id' ) )->exists()
+			                           ->where( 'account_id', $request->input( 'account_id' ) )->exists()
 			) {
 
 				OrganizationFollower::create( [
-					'user_id'                  => $request->input( 'user_id' ),
-					'organization_location_id' => $location_id
-				] );
+					                              'account_id'               => $request->input( 'account_id' ),
+					                              'organization_location_id' => $location_id
+				                              ] );
 				$status[ $location_id ] = true;
 			}
 		}
@@ -55,9 +57,10 @@ class ApiFollowerController extends Controller {
 	 *
 	 * @return mixed
 	 */
-	public function remove( Request $request ) {
+	public function remove( Request $request )
+	{
 		$validation_rules = [
-			'user_id'                   => 'required|exists:users,id',
+			'account_id'                => 'required|exists:accounts,id',
 			'organization_location_ids' => 'required|exists:organization_locations,id'
 		];
 
@@ -69,7 +72,7 @@ class ApiFollowerController extends Controller {
 		}
 
 		$removed = OrganizationFollower::whereIn( 'organization_location_id', $request->input( 'organization_location_ids' ) )
-		                               ->where( 'user_id', $request->input( 'user_id' ) )
+		                               ->where( 'account_id', $request->input( 'account_id' ) )
 		                               ->delete();
 		if ( $removed ) {
 			return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), null, MultiLang::getPhraseByKey( 'strings.follower.remove_success' ) );

@@ -16,10 +16,10 @@ class CreateOrganizationFollowerTable extends Migration
 	    Schema::create('organization_followers', function (Blueprint $table) {
 		    $table->increments( 'id' );
 		    $table->integer('organization_location_id')->unsigned();
-		    $table->integer('user_id')->unsigned();
+		    $table->integer('account_id')->unsigned();
 
 		    $table->foreign('organization_location_id')->references('id')->on('organization_locations')->onDelete('cascade');
-		    $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+		    $table->foreign('account_id')->references('id')->on('accounts')->onDelete('cascade');
 	    });
     }
 

@@ -33,9 +33,16 @@ class CreateAccountsTable extends Migration
 				[
 					'id'       => 1,
 					'username' => 'admin',
-					'email'    => 'admin@shiacircle.net',
+					'email'    => 'admin@14pearls.com',
 					'password' => bcrypt( 'admin999!' ),
-					'role_id'  => \App\UserRole::getDefaultRole()->id
+					'role_id'  => \App\UserRole::getAdminRole()->id
+				],
+				[
+					'id'       => 1,
+					'username' => 'contributor',
+					'email'    => 'contributor@14pearls.com',
+					'password' => bcrypt( 'unite999!' ),
+					'role_id'  => \App\UserRole::getContributorRole()->id
 				]
 			)
 		);

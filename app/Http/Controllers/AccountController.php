@@ -194,4 +194,37 @@ class AccountController extends Controller
 
 		return JSONResponse::encode(Config::get('constants.HTTP_CODES.SUCCESS'), $organizations);
 	}
+
+	/**
+	 * @param $id
+	 *
+	 * @return mixed
+	 */
+	public function accountFollowingOrganizations( $id )
+	{
+		$temp_organizations = [];
+
+		OrganizationFollower::with( [
+			                            'organization_location.organization',
+			                            'organization_location.organization.meta_data'
+		                            ] )->where( 'account_id', $id )->each( function ( $follower ) use ( &$temp_organizations ) {
+			$organization = $follower->organization_location->organization;
+			$org          = $organization->toArray();
+
+			$org['followers'] = $org['events'] = 0;
+
+			OrganizationLocation::where( 'organization_id', $organization->id )->each( function ( $location ) use ( &$org ) {
+				$org['followers'] += OrganizationFollower::where( 'organization_location_id', $location->id )->count();
+				$org['events']    += Event::where( 'organization_location_id', $location->id )->count();
+			} );
+
+			if ( ! isset( $temp_organizations[ $org['id'] ] ) ) {
+				$temp_organizations[ $org['id'] ] = $org;
+			}
+			$temp_organizations[ $org['id'] ]['locations'][] = $follower->organization_location;
+		} );
+		$organizations = array_values( $temp_organizations );
+
+		return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), $organizations );
+	}
 }

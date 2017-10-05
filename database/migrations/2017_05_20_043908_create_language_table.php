@@ -29,8 +29,28 @@ class CreateLanguageTable extends Migration
 			    ],
 			    [
 				    'id'    => 2,
+				    'name'  => 'Urdu',
+				    'code'  => 'ur'
+			    ],
+			    [
+				    'id'    => 3,
+				    'name'  => 'Arabic',
+				    'code'  => 'ar-IQ'
+			    ],
+			    [
+				    'id'    => 4,
+				    'name'  => 'Chinese',
+				    'code'  => 'zh-Hans'
+			    ],
+			    [
+				    'id'    => 5,
 				    'name'  => 'Japanese',
-				    'code'  => 'jp'
+				    'code'  => 'ja'
+			    ],
+			    [
+				    'id'    => 6,
+				    'name'  => 'French',
+				    'code'  => 'fr-FR'
 			    ]
 		    )
 	    );
