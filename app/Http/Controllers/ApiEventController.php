@@ -100,6 +100,91 @@ class ApiEventController extends Controller
 	}
 
 	/**
+	 * @param Request $request
+	 *
+	 * @return mixed
+	 */
+	public function update( $id, Request $request )
+	{
+		$event = Event::find( $id );
+
+		$validation_rules = [
+			'title'                    => 'required',
+			'organization_location_id' => 'required|exists:organization_locations,id',
+			'user_id'                  => 'required|exists:users,id',
+			'account_id'               => 'required|exists:accounts,id',
+			'english_date'             => 'nullable|date_format:Y-m-d',
+			'hijri_date'               => 'nullable|date_format:Y-m-d',
+			'start_time'               => 'nullable|date_format:H:i:s',
+			'end_time'                 => 'nullable|date_format:H:i:s'
+		];
+
+		$validator = Validator::make( $request->all(), $validation_rules );
+		$messages  = $validator->messages()->all();
+
+		if ( $validator->fails() ) {
+			return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.FAILED' ), null, MultiLang::getPhrase( $messages[0] ) );
+		}
+
+		if ( ! $event ) {
+			return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.FAILED' ), null, MultiLang::getPhraseByKey( 'strings.event.not_found' ) );
+		}
+
+		$latitude = $longitude = null;
+
+		if ( $request->has( 'venue' ) && ! empty( $request->input( 'venue' ) ) ) {
+			$organization_location = OrganizationLocation::find( $request->input( 'organization_location_id' ) );
+			$city_state            = $organization_location->city;
+			$country               = $organization_location->country;
+
+			if ( ! $city_state ) {
+				$city_state = $organization_location->state;
+			}
+
+			$coordinates = Geocode::coordinatesLookup( $request->input( 'venue' ) . ', ' . $city_state . ', ' . $country );
+
+			if ( $coordinates ) {
+				$latitude  = $coordinates['lat'];
+				$longitude = $coordinates['lng'];
+			}
+		}
+
+		$event->fill( [
+			              'title'                    => $request->input( 'title' ),
+			              'organization_location_id' => $request->input( 'organization_location_id' ),
+			              'user_id'                  => $request->input( 'user_id' ),
+			              'account_id'               => $request->input( 'account_id' ),
+			              'is_system_event'          => 0,
+			              'start_time'               => $request->input( 'start_time' ),
+			              'end_time'                 => $request->input( 'end_time', $request->input( 'start_time' ) ),
+			              'english_date'             => $request->input( 'english_date' ),
+			              'hijri_date'               => $request->input( 'hijri_date' ),
+			              'venue'                    => $request->input( 'venue' ),
+			              'latitude'                 => $latitude,
+			              'longitude'                => $longitude
+		              ] );
+
+		if ( $event->save() ) {
+			$meta_keys = Event::getMetaKeys();
+
+			foreach ( $meta_keys as $key ) {
+				if ( $request->has( $key ) ) {
+					EventMeta::updateOrCreate( [
+						                           'event_id' => $event->id,
+						                           'key'      => $key,
+					                           ], [
+						                           'value' => $request->input( $key )
+					                           ] );
+				}
+			}
+
+			return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), $event );
+		} else {
+			return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.FAILED' ), null, MultiLang::getPhraseByKey( 'strings.event.update_failed' ) );
+		}
+	}
+
+	/**
 	 * @param $id
 	 *
 	 * @return mixed
