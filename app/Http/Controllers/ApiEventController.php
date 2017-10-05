@@ -116,8 +116,8 @@ class ApiEventController extends Controller
 			'account_id'               => 'required|exists:accounts,id',
 			'english_date'             => 'nullable|date_format:Y-m-d',
 			'hijri_date'               => 'nullable|date_format:Y-m-d',
-			'start_time'               => 'nullable|date_format:H:i:s',
-			'end_time'                 => 'nullable|date_format:H:i:s'
+			'start_time'               => 'nullable|date_format:H:i',
+			'end_time'                 => 'nullable|date_format:H:i'
 		];
 
 		$validator = Validator::make( $request->all(), $validation_rules );
