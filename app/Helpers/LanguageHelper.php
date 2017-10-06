@@ -26,6 +26,7 @@ class LanguageHelper
 					return $str;
 			}
 		}
+
 		return $string;
 	}
 
