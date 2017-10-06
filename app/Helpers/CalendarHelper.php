@@ -84,6 +84,7 @@ class CalendarHelper
 		}
 
 		$field = '<div class="row">';
+
 		if ( $show_year ) {
 			$field .= '<div class="col-md-4">' . Form::text( 'islamic[year]', $year, [
 					'class'       => 'form-control',

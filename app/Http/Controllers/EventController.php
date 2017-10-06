@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Event;
 use App\EventCategory;
+use App\Organization;
 use Illuminate\Http\Request;
 use Datatables;
 use Illuminate\Support\Facades\Auth;
@@ -57,7 +58,39 @@ class EventController extends Controller
 	 */
 	public function create()
 	{
-		return view( 'event.create', [ 'is_system' => false ] );
+		$organizations = [
+			'' => 'Select Organization'
+		];
+		$months        = [
+			'January',
+			'February',
+			'March',
+			'April',
+			'May',
+			'June',
+			'July',
+			'August',
+			'September',
+			'October',
+			'November',
+			'December'
+		];
+		$days          = [];
+
+		for ( $i = 1; $i <= 31; $i ++ ) {
+			$days[] = ( $i > 9 ? $i : "0" . $i );
+		}
+
+		Organization::all()->each( function ( $org ) use ( &$organizations ) {
+			$organizations[ $org->id ] = $org->name;
+		} );
+
+		return view( 'event.create', [
+			'is_system'     => false,
+			'months'        => $months,
+			'days'          => $days,
+			'organizations' => $organizations
+		] );
 	}
 
 	/**
@@ -79,7 +112,57 @@ class EventController extends Controller
 	 */
 	public function store( Request $request )
 	{
-		//
+		$user = Auth::user();
+
+		$validation_rules = [
+			"title"                    => "required",
+			"organization_location_id" => "required|exists:organization_locations,id",
+			"time"                     => "required|date_format:H:i",
+			"islamic.month"            => "required_if:is_hijri_date,1",
+			"islamic.day"              => "required_if:is_hijri_date,1",
+			"date.day"                 => "required_without:is_hijri_date",
+			"date.month"               => "required_without:is_hijri_date",
+			"date.year"                => "required_without:is_hijri_date",
+		];
+
+		$validator = Validator::make( $request->all(), $validation_rules );
+		$messages  = $validator->messages()->all();
+
+		if ( $validator->fails() ) {
+			$error = $messages[0];
+
+			return response()->json( [
+				                         'status'  => 'danger',
+				                         'message' => $error
+			                         ] );
+		}
+
+		$is_hijri_date = $request->has( 'is_hijri_date' ) && $request->input( 'is_hijri_date' ) == '1';
+		$date          = Hijri::parse( $request->input( 'islamic.month' ), $request->input( 'islamic.day' ) );
+
+		$event = Event::create( [
+			                        'title'                    => $request->input( 'title' ),
+			                        'hijri_date'               => $is_hijri_date ? $date->format( 'Y-m-d' ) : null,
+			                        'english_date'             => ! $is_hijri_date ? $date->format( 'Y-m-d' ) : null,
+			                        'is_system_event'          => 0,
+			                        'account_id'               => $user->id,
+			                        'organization_location_id' => $request->input( 'organization_location_id' ),
+			                        'start_time'               => $request->input( 'time' ),
+			                        'end_time'                 => $request->input( 'time' ),
+			                        'venue'                    => $request->input( 'venue' )
+		                        ] );
+
+		if ( $event->id > 0 ) {
+			return response()->json( [
+				                         'status'  => 'success',
+				                         'message' => 'Event created successfully'
+			                         ] );
+		}
+
+		return response()->json( [
+			                         'status'  => 'danger',
+			                         'message' => 'Failed to create event'
+		                         ] );
 	}
 
 	public function system_store( Request $request )
@@ -165,8 +248,9 @@ class EventController extends Controller
 	public function system_edit( Event $event )
 	{
 		$categories = $this->get_categories();
-		if(!$event->category_id)
+		if ( ! $event->category_id ) {
 			$event->category_id = 'other';
+		}
 
 		return view( 'event.edit', [ 'is_system' => true, 'event' => $event, 'categories' => $categories ] );
 	}

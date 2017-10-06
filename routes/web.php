@@ -25,7 +25,7 @@ Route::get( '/admin/login', function () {
 	return redirect( 'login' );
 } );
 
-Route::get( '/privacy', 'PageController@privacy');
+Route::get( '/privacy', 'PageController@privacy' );
 
 Route::group( [ 'prefix' => 'admin', 'middleware' => 'auth' ], function () {
 	Route::get( '/', 'HomeController@index' );
@@ -69,6 +69,7 @@ Route::group( [ 'prefix' => 'admin', 'middleware' => 'auth' ], function () {
 	 */
 	Route::group( [ 'prefix' => 'org' ], function () {
 		Route::get( 'data', 'OrganizationController@data' )->name( 'organization.data' ); // Organization data
+		Route::get( '{organization_id}/locations', 'OrganizationController@locations' )->name( 'organization.locations' );
 	} );
 	Route::resource( 'org', 'OrganizationController' );
 } );

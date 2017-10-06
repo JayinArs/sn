@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Account;
 use App\Event;
 use App\Organization;
+use App\OrganizationFeed;
 use App\OrganizationFollower;
 use App\OrganizationLocation;
+use App\OrganizationMeta;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Datatables;
@@ -26,6 +28,9 @@ class OrganizationController extends Controller
 		return view( 'organization.index' );
 	}
 
+	/**
+	 * @return mixed
+	 */
 	public function data()
 	{
 		$organizations = [];
@@ -44,6 +49,16 @@ class OrganizationController extends Controller
 		} );
 
 		return Datatables::of( new Collection( $organizations ) )->make( true );
+	}
+
+	/**
+	 * @param $id
+	 *
+	 * @return \Illuminate\Http\JsonResponse
+	 */
+	public function locations( $id )
+	{
+		return response()->json( OrganizationLocation::where( 'organization_id', $id )->get() );
 	}
 
 	/**
@@ -145,11 +160,24 @@ class OrganizationController extends Controller
 	 */
 	public function destroy( Organization $organization )
 	{
-		if ( $organization->delete() ) {
-			return response()->json( [
-				                         'status'  => 'success',
-				                         'message' => 'Organization deleted successfully'
-			                         ] );
+		if ( $organization ) {
+			$locations = OrganizationLocation::where( 'organization_id', $id );
+			$metas     = OrganizationMeta::where( 'organization_id', $id );
+
+			$locations->each( function ( $location ) {
+				OrganizationFollower::where( 'organization_location_id', $location->id )->delete();
+				OrganizationFeed::where( 'organization_location_id', $location->id )->delete();
+			} );
+
+			$locations->delete();
+			$metas->delete();
+
+			if ( $organization->delete() ) {
+				return response()->json( [
+					                         'status'  => 'success',
+					                         'message' => 'Organization deleted successfully'
+				                         ] );
+			}
 		}
 	}
 }

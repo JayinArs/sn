@@ -13,8 +13,8 @@
                     @if($is_system)
                         <fieldset>
                             <div class="form-group">
-                                <label class="col-md-1 col-sm-2 control-label">Category:</label>
-                                <div class="col-md-11 col-sm-10">
+                                <label class="col-md-2 col-sm-2 text-right control-label">Category:</label>
+                                <div class="col-md-10 col-sm-10">
                                     {{ Form::select('category', $categories, false, ['class' => 'form-control']) }}
                                 </div>
                             </div>
@@ -22,20 +22,83 @@
                     @endif
                     <fieldset>
                         <div class="form-group">
-                            <label class="col-md-1 col-sm-2 control-label">Title:</label>
-                            <div class="col-md-11 col-sm-10">
+                            <label class="col-md-2 col-sm-2 text-right control-label">Title:</label>
+                            <div class="col-md-10 col-sm-10">
                                 {{ Form::text('title', false, ['class' => 'form-control']) }}
                             </div>
                         </div>
                     </fieldset>
                     <fieldset>
                         <div class="form-group">
-                            <label class="col-md-1 col-sm-2 control-label">Hijri Date:</label>
-                            <div class="col-md-11 col-sm-10">
-                                {!! Hijri::get_field() !!}
+                            <label class="col-md-2 col-sm-2 text-right control-label">Hijri Date:</label>
+                            <div class="col-md-10 col-sm-10">
+                                {!! Hijri::get_field(false, false, false, false, false) !!}
                             </div>
                         </div>
                     </fieldset>
+                    @if(!$is_system)
+                        <fieldset>
+                            <div class="form-group">
+                                <label class="col-md-2 col-sm-2 text-right control-label">Organization:</label>
+                                <div class="col-md-10 col-sm-10">
+                                    {!! Form::select( 'organization_id', $organizations, false, [ 'id' => 'select-organization', 'class' => 'form-control' ] ) !!}
+                                </div>
+                            </div>
+                        </fieldset>
+                        <fieldset>
+                            <div class="form-group">
+                                <label class="col-md-2 col-sm-2 text-right control-label">Organization Location:</label>
+                                <div class="col-md-10 col-sm-10">
+                                    {!! Form::select( 'organization_location_id', [], false, [ 'id' => 'select-organization-location', 'class' => 'form-control', 'disabled' => 'disabled' ] ) !!}
+                                </div>
+                            </div>
+                        </fieldset>
+                        <fieldset>
+                            <div class="form-group">
+                                <label class="col-md-2 col-sm-2 text-right control-label">Follow Hijri Date:</label>
+                                <div class="col-md-10 col-sm-10">
+                                    <label class="switch">
+                                        {!! Form::checkbox( 'is_hijri_date', true, true, [ 'id' => 'cb_is_hijri_date' ] ) !!}
+                                        <span></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </fieldset>
+                        <fieldset id="english-date" style="display: none;">
+                            <div class="form-group">
+                                <label class="col-md-2 col-sm-2 text-right control-label">English Date:</label>
+                                <div class="col-md-10 col-sm-10">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            {!! Form::text( 'date[year]', false, ['class' => 'form-control', 'placeholder' => 'Year'] ) !!}
+                                        </div>
+                                        <div class="col-md-4">
+                                            {!! Form::select( 'date[month]', $months, false, [ 'class' => 'form-control' ] ) !!}
+                                        </div>
+                                        <div class="col-md-4">
+                                            {!! Form::select( 'date[day]', $days, false, [ 'class' => 'form-control' ] ) !!}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
+                        <fieldset>
+                            <div class="form-group">
+                                <label class="col-md-2 col-sm-2 text-right control-label">Time:</label>
+                                <div class="col-md-10 col-sm-10">
+                                    {!! Form::text( 'time', false, ['class' => 'form-control', 'placeholder' => '00:00'] ) !!}
+                                </div>
+                            </div>
+                        </fieldset>
+                        <fieldset>
+                            <div class="form-group">
+                                <label class="col-md-2 col-sm-2 text-right control-label">Venue:</label>
+                                <div class="col-md-10 col-sm-10">
+                                    {!! Form::text( 'venue', false, ['class' => 'form-control', 'placeholder' => 'Place name'] ) !!}
+                                </div>
+                            </div>
+                        </fieldset>
+                    @endif
                     <div class="form-group text-right">
                         <div class="col-md-12">
                             <input type="submit" class="btn btn-success" value="Publish"/>
@@ -74,6 +137,41 @@
             });
 
             return false;
+        });
+
+        $("#cb_is_hijri_date").on("change", function() {
+            if($(this).is(":checked"))
+                $("fieldset#english-date").slideUp();
+            else
+                $("fieldset#english-date").slideDown();
+        });
+
+        $("#select-organization").on("change", function() {
+            var $organization_id = $(this).val();
+            var $selector = $("#select-organization-location");
+
+            $selector.attr("disabled", "disabled");
+            $selector.empty();
+            $selector.append('<option value="">Loading...</option>');
+
+            $.ajax({
+                url: '{{ route("organization.locations", "%%") }}'.replace('%%', $organization_id),
+                type: 'GET',
+                dataType: 'JSON',
+                success: function (data) {
+                    $selector.empty();
+
+                    data.map(function(location) {
+                        $selector.append('<option value="'+location.id+'">' + location.city + ', ' + location.country + '</option>');
+                    });
+
+                    $selector.removeAttr("disabled");
+                },
+                error: function (e) {
+                    console.log(e);
+                    $selector.attr("disabled", "disabled");
+                }
+            });
         });
     });
 </script>
