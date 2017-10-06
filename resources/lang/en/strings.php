@@ -25,7 +25,8 @@ return [
 		"creation_failed" => "Organization creation failed",
 		"update_success"  => "Organization updated successfully",
 		"update_failed"   => "Failed to update organization",
-		"not_found"       => "Organization not found"
+		"not_found"       => "Organization not found",
+		"deleted"         => "Organization deleted successfully",
 	],
 	"location"     => [
 		"creation_failed" => "Failed to add location"

@@ -306,4 +306,32 @@ class ApiOrganizationController extends Controller
 
 		return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), $events );
 	}
+
+	/**
+	 * @param $id
+	 *
+	 * @return mixed
+	 */
+	public function destroy( $id )
+	{
+		$organization = Organization::find( $id );
+
+		if ( $organization ) {
+			$locations = OrganizationLocation::where( 'organization_id', $id );
+			$metas     = OrganizationMeta::where( 'organization_id', $id );
+
+			$locations->each( function ( $location ) {
+				OrganizationFollower::where( 'organization_location_id', $location->id )->delete();
+				OrganizationFeed::where( 'organization_location_id', $location->id )->delete();
+			} );
+
+			$locations->delete();
+			$metas->delete();
+			$organization->delete();
+
+			return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), null, MultiLang::getPhraseByKey( 'strings.organization.deleted' ) );
+		} else {
+			return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.NOT_FOUND' ), null, MultiLang::getPhraseByKey( 'strings.organization.not_found' ) );
+		}
+	}
 }

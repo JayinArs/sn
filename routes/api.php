@@ -64,6 +64,7 @@ Route::group( [ 'prefix' => 'v1', 'middleware' => 'token' ], function () {
 		Route::get( 'all', 'ApiOrganizationController@all' )->name( 'organization.all' );
 		Route::get( 'all/{user_id}', 'ApiOrganizationController@all' )->name( 'organization.all' );
 		Route::get( '{organization_id}', 'ApiOrganizationController@getSingleOrganization' )->name( 'organization.get' );
+		Route::delete( '{organization_id}', 'ApiOrganizationController@destroy' )->name( 'organization.delete' );
 		Route::get( '{organization_id}/account/{account_id}', 'ApiOrganizationController@getSingleOrganization' )->name( 'organization.get.ref.account' );
 		Route::post( 'create', 'ApiOrganizationController@create' )->name( 'organization.create' );
 		Route::post( '{organization_id}/update', 'ApiOrganizationController@update' )->name( 'organization.update' );
