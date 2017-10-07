@@ -18,6 +18,9 @@ class UserController extends Controller
 		return view( 'user.index' );
 	}
 
+	/**
+	 * @return mixed
+	 */
 	public function data()
 	{
 		return Datatables::of( User::with( 'language' )->get() )->make( true );

@@ -65,6 +65,14 @@ Route::group( [ 'prefix' => 'admin', 'middleware' => 'auth' ], function () {
 	Route::resource( 'user', 'UserController', [ 'only' => [ 'index', 'show' ] ] );
 
 	/*
+	 * Account Routes
+	 */
+	Route::group( [ 'prefix' => 'account' ], function () {
+		Route::get( 'data', 'AccountController@data' )->name( 'account.data' ); // User data
+	} );
+	Route::resource( 'account', 'AccountController', [ 'only' => [ 'index', 'show' ] ] );
+
+	/*
 	 * Organization Routes
 	 */
 	Route::group( [ 'prefix' => 'org' ], function () {

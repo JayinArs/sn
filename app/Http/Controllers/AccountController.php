@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Config;
 use Validator;
 use JSONResponse;
 use MultiLang;
+use Datatables;
 
 class AccountController extends Controller
 {
@@ -243,5 +244,38 @@ class AccountController extends Controller
 		$organizations = array_values( $temp_organizations );
 
 		return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), $organizations );
+	}
+
+	/**
+	 * Display a listing of the resource.
+	 *
+	 * @return \Illuminate\Http\Response
+	 */
+	public function index()
+	{
+		return view( 'account.index' );
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function data()
+	{
+		return Datatables::of( Account::with( [ 'users', 'role' ] )->get() )->make( true );
+	}
+
+	/**
+	 * @param Account $account
+	 *
+	 * @return \Illuminate\Http\JsonResponse
+	 */
+	public function destroy( Account $account )
+	{
+		if ( $account->delete() ) {
+			return response()->json( [
+				                         'status'  => 'success',
+				                         'message' => 'Account delete successfully'
+			                         ] );
+		}
 	}
 }

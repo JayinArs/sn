@@ -18,7 +18,8 @@ return [
 			'item_type' => 'group',
 			'action'    => 'users',
 			'children'  => [
-				[ 'label' => 'Devices', 'action' => 'admin/user', 'item_type' => 'item' ]
+				[ 'label' => 'Devices', 'action' => 'admin/user', 'item_type' => 'item' ],
+				[ 'label' => 'Accounts', 'action' => 'admin/account', 'item_type' => 'item' ]
 			]
 		],
 		[ 'label' => 'Content Management', 'item_type' => 'heading' ],
