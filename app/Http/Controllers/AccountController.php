@@ -191,23 +191,26 @@ class AccountController extends Controller
 	{
 		$organizations = [];
 
-		Organization::with( 'meta_data' )->where( 'account_id', $id )->each( function ( $organization ) use ( &$organizations, &$id ) {
-			$org = $organization->toArray();
+		Organization::with( 'meta_data' )
+		            ->where( 'account_id', $id )
+		            ->orderBy( 'id', 'desc' )
+		            ->each( function ( $organization ) use ( &$organizations, &$id ) {
+			            $org = $organization->toArray();
 
-			$org['is_following'] = false;
-			$org['followers']    = $org['events'] = 0;
+			            $org['is_following'] = false;
+			            $org['followers']    = $org['events'] = 0;
 
-			OrganizationLocation::where( 'organization_id', $organization->id )->each( function ( $location ) use ( &$org, &$id ) {
-				$org['followers'] += OrganizationFollower::where( 'organization_location_id', $location->id )->count();
-				$org['events']    += Event::where( 'organization_location_id', $location->id )->count();
+			            OrganizationLocation::where( 'organization_id', $organization->id )->each( function ( $location ) use ( &$org, &$id ) {
+				            $org['followers'] += OrganizationFollower::where( 'organization_location_id', $location->id )->count();
+				            $org['events']    += Event::where( 'organization_location_id', $location->id )->count();
 
-				$org['is_following'] = OrganizationFollower::where( 'organization_location_id', $location->id )
-				                                           ->where( 'account_id', $id )
-				                                           ->exists();
-			} );
+				            $org['is_following'] = OrganizationFollower::where( 'organization_location_id', $location->id )
+				                                                       ->where( 'account_id', $id )
+				                                                       ->exists();
+			            } );
 
-			$organizations[] = $org;
-		} );
+			            $organizations[] = $org;
+		            } );
 
 		return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), $organizations );
 	}
@@ -224,23 +227,26 @@ class AccountController extends Controller
 		OrganizationFollower::with( [
 			                            'organization_location.organization',
 			                            'organization_location.organization.meta_data'
-		                            ] )->where( 'account_id', $id )->each( function ( $follower ) use ( &$temp_organizations ) {
-			$organization = $follower->organization_location->organization;
-			$org          = $organization->toArray();
+		                            ] )
+		                    ->where( 'account_id', $id )
+		                    ->orderBy( 'id', 'desc' )
+		                    ->each( function ( $follower ) use ( &$temp_organizations ) {
+			                    $organization = $follower->organization_location->organization;
+			                    $org          = $organization->toArray();
 
-			$org['is_following'] = true;
-			$org['followers']    = $org['events'] = 0;
+			                    $org['is_following'] = true;
+			                    $org['followers']    = $org['events'] = 0;
 
-			OrganizationLocation::where( 'organization_id', $organization->id )->each( function ( $location ) use ( &$org ) {
-				$org['followers'] += OrganizationFollower::where( 'organization_location_id', $location->id )->count();
-				$org['events']    += Event::where( 'organization_location_id', $location->id )->count();
-			} );
+			                    OrganizationLocation::where( 'organization_id', $organization->id )->each( function ( $location ) use ( &$org ) {
+				                    $org['followers'] += OrganizationFollower::where( 'organization_location_id', $location->id )->count();
+				                    $org['events']    += Event::where( 'organization_location_id', $location->id )->count();
+			                    } );
 
-			if ( ! isset( $temp_organizations[ $org['id'] ] ) ) {
-				$temp_organizations[ $org['id'] ] = $org;
-			}
-			$temp_organizations[ $org['id'] ]['locations'][] = $follower->organization_location;
-		} );
+			                    if ( ! isset( $temp_organizations[ $org['id'] ] ) ) {
+				                    $temp_organizations[ $org['id'] ] = $org;
+			                    }
+			                    $temp_organizations[ $org['id'] ]['locations'][] = $follower->organization_location;
+		                    } );
 		$organizations = array_values( $temp_organizations );
 
 		return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), $organizations );

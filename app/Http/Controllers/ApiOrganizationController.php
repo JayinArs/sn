@@ -29,28 +29,30 @@ class ApiOrganizationController extends Controller
 		Organization::with( [
 			                    'meta_data',
 			                    'locations'
-		                    ] )->each( function ( $organization ) use ( &$organizations, &$account_id ) {
-			$org = $organization->toArray();
+		                    ] )
+		            ->orderBy( 'id', 'desc' )
+		            ->each( function ( $organization ) use ( &$organizations, &$account_id ) {
+			            $org = $organization->toArray();
 
-			$org['followers'] = $org['events'] = 0;
+			            $org['followers'] = $org['events'] = 0;
 
-			if ( $account_id ) {
-				$org['is_following'] = false;
-			}
+			            if ( $account_id ) {
+				            $org['is_following'] = false;
+			            }
 
-			OrganizationLocation::where( 'organization_id', $organization->id )->each( function ( $location ) use ( &$org, &$account_id ) {
-				$org['followers'] += OrganizationFollower::where( 'organization_location_id', $location->id )->count();
-				$org['events']    += Event::where( 'organization_location_id', $location->id )->count();
+			            OrganizationLocation::where( 'organization_id', $organization->id )->each( function ( $location ) use ( &$org, &$account_id ) {
+				            $org['followers'] += OrganizationFollower::where( 'organization_location_id', $location->id )->count();
+				            $org['events']    += Event::where( 'organization_location_id', $location->id )->count();
 
-				if ( $account_id ) {
-					$org['is_following'] = OrganizationFollower::where( 'organization_location_id', $location->id )
-					                                           ->where( 'account_id', $account_id )
-					                                           ->exists();
-				}
-			} );
+				            if ( $account_id ) {
+					            $org['is_following'] = OrganizationFollower::where( 'organization_location_id', $location->id )
+					                                                       ->where( 'account_id', $account_id )
+					                                                       ->exists();
+				            }
+			            } );
 
-			$organizations[] = $org;
-		} );
+			            $organizations[] = $org;
+		            } );
 
 		return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), $organizations );
 	}
