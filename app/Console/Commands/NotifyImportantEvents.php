@@ -98,7 +98,6 @@ class NotifyImportantEvents extends Command
 						                         $followers ++;
 						                         try {
 							                         Notification::send( $follower->account->users, new EventDate( $event ) );
-							                         //$follower->users->notify( new EventDate( $event ) );
 						                         } catch ( ClientException $e ) {
 							                         $followers --;
 						                         }

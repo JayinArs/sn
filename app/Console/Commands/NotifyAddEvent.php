@@ -7,6 +7,7 @@ use App\Notifications\EventCreated;
 use App\OrganizationFollower;
 use GuzzleHttp\Exception\ClientException;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 use Mockery\Exception;
 
@@ -54,7 +55,7 @@ class NotifyAddEvent extends Command
 		                    ->each( function ( $follower ) use ( &$event, &$followers ) {
 			                    $followers ++;
 			                    try {
-				                    $follower->users->notify( new EventCreated( $event ) );
+				                    Notification::send( $follower->account->users, new EventCreated( $event ) );
 			                    } catch ( ClientException $e ) {
 				                    $followers --;
 			                    }
