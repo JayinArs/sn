@@ -46,18 +46,22 @@ class NotifyAddFeed extends Command
 		$feed      = Feed::find( $id );
 		$followers = 0;
 
-		OrganizationFollower::with( [
-			                            'account',
-			                            'account.users'
-		                            ] )->where( 'organization_location_id', $feed->organization_location_id )
-		                    ->each( function ( $follower ) use ( &$feed, &$followers ) {
-			                    $followers ++;
-			                    try {
-				                    Notification::send( $follower->account->users, new FeedCreated( $feed ) );
-			                    } catch ( ClientException $e ) {
-				                    $followers --;
-			                    }
-		                    } );
-		$this->info( 'Feed added at: ' . date( 'Y-m-d h:i:s' ) . ' followed by ' . $followers . ' users' );
+		$feeds = $feed->organization_feeds;
+
+		if ( ! empty( $feeds ) ) {
+			OrganizationFollower::with( [
+				                            'account',
+				                            'account.users'
+			                            ] )->where( 'organization_location_id', $feeds[0]->organization_location_id )
+			                    ->each( function ( $follower ) use ( &$feed, &$followers ) {
+				                    $followers ++;
+				                    try {
+					                    Notification::send( $follower->account->users, new FeedCreated( $feed ) );
+				                    } catch ( ClientException $e ) {
+					                    $followers --;
+				                    }
+			                    } );
+			$this->info( 'Feed added at: ' . date( 'Y-m-d h:i:s' ) . ' followed by ' . $followers . ' users' );
+		}
 	}
 }
