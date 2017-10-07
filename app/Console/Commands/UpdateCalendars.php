@@ -68,6 +68,7 @@ class UpdateCalendars extends Command
 						        $calendar->last_updated     = Carbon::now( $calendar->timezone )->toDateTimeString();
 						        $calendar->save();
 
+						        /*
 						        PushNotification::notify( 'system_events', [
 							        'timezone' => $calendar->timezone,
 							        'date'     => $current_date['date']
@@ -77,7 +78,7 @@ class UpdateCalendars extends Command
 							        'timezone' => $calendar->timezone,
 							        'date'     => $current_date['date']
 						        ] );
-
+						        */
 						        echo 'updated: ' . $current_date['date'] . '\n';
 					        }
 				        }
