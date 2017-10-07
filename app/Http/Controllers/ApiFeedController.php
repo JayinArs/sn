@@ -57,7 +57,7 @@ class ApiFeedController extends Controller
 				}
 			}
 
-			PushNotification::notify( 'feed', $feed );
+			PushNotification::notify( 'feed', Feed::with( 'organization' )->find( $feed->id ) );
 
 			return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), $status );
 		} else {
