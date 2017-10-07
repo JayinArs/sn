@@ -274,12 +274,16 @@ class ApiOrganizationController extends Controller
 				                        'feed',
 				                        'feed.user',
 				                        'feed.user.meta_data'
-			                        ] )->where( 'organization_location_id', $location->id )->each( function ( $feed_relation ) use ( &$feeds, &$organization ) {
-				$feed                   = $feed_relation->feed->toArray();
-				$feed['organization']   = $organization;
-				$feed['human_readable'] = Carbon::parse( $feed["datetime"] )->diffForHumans( null, false, true );
-				$feeds[]                = $feed;
-			} );
+			                        ] )
+			                ->where( 'organization_location_id', $location->id )
+			                ->orderBy( 'feed.datetime', 'desc' )
+			                ->distinct()
+			                ->each( function ( $feed_relation ) use ( &$feeds, &$organization ) {
+				                $feed                   = $feed_relation->feed->toArray();
+				                $feed['organization']   = $organization;
+				                $feed['human_readable'] = Carbon::parse( $feed["datetime"] )->diffForHumans( null, false, true );
+				                $feeds[]                = $feed;
+			                } );
 		}
 
 		return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), $feeds );
