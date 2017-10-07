@@ -97,7 +97,8 @@ class NotifyImportantEvents extends Command
 					                         ->each( function ( $follower ) use ( &$event, &$followers ) {
 						                         $followers ++;
 						                         try {
-							                         Notification::send( $follower->users, new EventDate( $event ) );
+						                         	var_dump($follower->users);
+							                         //Notification::send( $follower->users, new EventDate( $event ) );
 							                         //$follower->users->notify( new EventDate( $event ) );
 						                         } catch ( ClientException $e ) {
 							                         $followers --;
