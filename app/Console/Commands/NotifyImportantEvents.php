@@ -13,6 +13,7 @@ use Carbon\Carbon;
 use GuzzleHttp\Exception\ClientException;
 use Illuminate\Console\Command;
 use Illuminate\Database\Query\Builder;
+use Illuminate\Support\Facades\Notification;
 
 class NotifyImportantEvents extends Command
 {
@@ -90,13 +91,14 @@ class NotifyImportantEvents extends Command
 					     $followers = 0;
 					     OrganizationFollower::with( [
 						                                 'account',
-						                                 'account.meta_data'
+						                                 'account.users'
 					                                 ] )
 					                         ->where( 'organization_location_id', $event->organization_location_id )
 					                         ->each( function ( $follower ) use ( &$event, &$followers ) {
 						                         $followers ++;
 						                         try {
-							                         $follower->user->notify( new EventDate( $event ) );
+							                         Notification::send( $follower->users, new EventDate( $event ) );
+							                         //$follower->users->notify( new EventDate( $event ) );
 						                         } catch ( ClientException $e ) {
 							                         $followers --;
 						                         }

@@ -49,12 +49,12 @@ class NotifyAddEvent extends Command
 
 		OrganizationFollower::with( [
 			                            'account',
-			                            'account.meta_data'
+			                            'account.users'
 		                            ] )->where( 'organization_location_id', $event->organization_location_id )
 		                    ->each( function ( $follower ) use ( &$event, &$followers ) {
 			                    $followers ++;
 			                    try {
-				                    $follower->user->notify( new EventCreated( $event ) );
+				                    $follower->users->notify( new EventCreated( $event ) );
 			                    } catch ( ClientException $e ) {
 				                    $followers --;
 			                    }

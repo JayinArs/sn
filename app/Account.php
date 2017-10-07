@@ -15,16 +15,21 @@ class Account extends Authenticatable
 	 *
 	 * @var array
 	 */
-	protected $dates = ['deleted_at'];
+	protected $dates = [ 'deleted_at' ];
 
 	/**
 	 * The attributes that are mass assignable.
 	 *
 	 * @var array
 	 */
-    protected $fillable = [
-    	'username', 'email', 'status', 'role_id', 'registration_date', 'password'
-    ];
+	protected $fillable = [
+		'username',
+		'email',
+		'status',
+		'role_id',
+		'registration_date',
+		'password'
+	];
 
 	/**
 	 * The attributes that should be hidden for arrays.
@@ -43,6 +48,14 @@ class Account extends Authenticatable
 	 */
 	public function role()
 	{
-		return $this->belongsTo('App\UserRole', 'role_id');
+		return $this->belongsTo( 'App\UserRole', 'role_id' );
+	}
+
+	/**
+	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
+	 */
+	public function users()
+	{
+		return $this->hasMany( 'App\User', 'account_id', 'id' );
 	}
 }
