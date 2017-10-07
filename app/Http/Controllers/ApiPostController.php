@@ -18,7 +18,7 @@ class ApiPostController extends Controller
 	{
 		$post = Post::with( 'meta_data' )->inRandomOrder()->first();
 
-		if ( $request->hasHeader( 'Content-Type' ) ) {
+		if ( $request->hasHeader( 'Content-Type' ) && $post ) {
 			$language = Language::where( 'code', $request->header( 'Content-Type' ) )->first();
 
 			if ( $language ) {
