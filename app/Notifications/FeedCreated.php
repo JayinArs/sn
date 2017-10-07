@@ -60,9 +60,13 @@ class FeedCreated extends Notification
 	 */
 	public function toOneSignal( $notifiable )
 	{
-		return OneSignalMessage::create()
-		                       ->subject( "{$this->feed->organization->name}:" )
-		                       ->body( "{$this->feed->content}" );
+		$feeds = $this->feed->organization_feeds;
+
+		if ( ! empty( $feeds ) ) {
+			return OneSignalMessage::create()
+			                       ->subject( "{$feeds[0]->organization_location->organization->name}:" )
+			                       ->body( "{$this->feed->content}" );
+		}
 	}
 
 	/**

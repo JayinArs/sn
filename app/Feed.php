@@ -12,7 +12,9 @@ class Feed extends Model
 	 * @var array
 	 */
 	protected $fillable = [
-		'content', 'datetime', 'user_id'
+		'content',
+		'datetime',
+		'user_id'
 	];
 
 	protected $table = 'feeds';
@@ -23,6 +25,14 @@ class Feed extends Model
 	 */
 	public function user()
 	{
-		return $this->belongsTo('App\User', 'user_id');
+		return $this->belongsTo( 'App\User', 'user_id' );
+	}
+
+	/**
+	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
+	 */
+	public function organization_feeds()
+	{
+		return $this->hasMany( 'App\OrganizationFeed', 'feed_id', 'id' );
 	}
 }
