@@ -6,6 +6,7 @@ use App\Event;
 use App\Feed;
 use App\Organization;
 use App\OrganizationFeed;
+use App\OrganizationFollower;
 use App\OrganizationLocation;
 use App\OrganizationMeta;
 use Illuminate\Http\Request;
@@ -24,10 +25,10 @@ class ApiLocationController extends Controller
 	public function add( Request $request )
 	{
 		$validation_rules = [
-			'country' => 'required',
+			'country'         => 'required',
 			'organization_id' => 'required|exists:organizations,id',
-			'city' => 'required_without_all:state|unique:organization_locations,city,NULL,id,organization_id,' . $request->input( 'organization_id' ),
-			'state' => 'required_without_all:city|unique:organization_locations,state,NULL,id,organization_id,' . $request->input( 'organization_id' ),
+			'city'            => 'required_without_all:state|unique:organization_locations,city,NULL,id,organization_id,' . $request->input( 'organization_id' ),
+			'state'           => 'required_without_all:city|unique:organization_locations,state,NULL,id,organization_id,' . $request->input( 'organization_id' ),
 		];
 
 		$validator = Validator::make( $request->all(), $validation_rules );
@@ -85,5 +86,19 @@ class ApiLocationController extends Controller
 		} );
 
 		return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), $feeds );
+	}
+
+	public function destroy( OrganizationLocation $location )
+	{
+		if ( $location ) {
+			OrganizationFollower::where( 'organization_location_id', $location->id )->delete();
+			OrganizationFeed::where( 'organization_location_id', $location->id )->delete();
+
+			$location->delete();
+
+			return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), null, MultiLang::getPhraseByKey( 'strings.location.deleted' ) );
+		} else {
+			return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.NOT_FOUND' ), null, MultiLang::getPhraseByKey( 'strings.organization.not_found' ) );
+		}
 	}
 }

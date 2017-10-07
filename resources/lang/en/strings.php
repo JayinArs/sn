@@ -29,7 +29,8 @@ return [
 		"deleted"         => "Organization deleted successfully",
 	],
 	"location"     => [
-		"creation_failed" => "Failed to add location"
+		"creation_failed" => "Failed to add location",
+		"deleted"         => "Location deleted successfully",
 	],
 	"follower"     => [
 		"success"        => "Followed successfully",
