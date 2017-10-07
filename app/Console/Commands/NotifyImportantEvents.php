@@ -89,8 +89,8 @@ class NotifyImportantEvents extends Command
 
 					     $followers = 0;
 					     OrganizationFollower::with( [
-						                                 'user',
-						                                 'user.meta_data'
+						                                 'account',
+						                                 'account.meta_data'
 					                                 ] )
 					                         ->where( 'organization_location_id', $event->organization_location_id )
 					                         ->each( function ( $follower ) use ( &$event, &$followers ) {

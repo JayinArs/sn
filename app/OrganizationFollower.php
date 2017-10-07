@@ -29,7 +29,7 @@ class OrganizationFollower extends Model
 	/**
 	 * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
 	 */
-	public function user()
+	public function account()
 	{
 		return $this->belongsTo('App\Account', 'account_id');
 	}
