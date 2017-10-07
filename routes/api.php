@@ -82,7 +82,7 @@ Route::group( [ 'prefix' => 'v1', 'middleware' => 'token' ], function () {
 		 */
 		Route::group( [ 'prefix' => 'locations' ], function () {
 			Route::post( 'add', 'ApiLocationController@add' )->name( 'location.add' );
-			Route::post( 'delete', 'ApiLocationController@destroy' )->name( 'location.destroy' );
+			Route::delete( '{location_id}', 'ApiLocationController@destroy' )->name( 'location.destroy' );
 		} );
 
 		/*
