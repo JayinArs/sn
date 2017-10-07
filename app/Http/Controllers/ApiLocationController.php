@@ -93,8 +93,10 @@ class ApiLocationController extends Controller
 	 *
 	 * @return mixed
 	 */
-	public function destroy( OrganizationLocation $location )
+	public function destroy( $id )
 	{
+		$location = OrganizationLocation::find( $id );
+		
 		if ( $location ) {
 			OrganizationFollower::where( 'organization_location_id', $location->id )->delete();
 			OrganizationFeed::where( 'organization_location_id', $location->id )->delete();
