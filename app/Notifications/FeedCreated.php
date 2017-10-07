@@ -64,7 +64,7 @@ class FeedCreated extends Notification
 
 		if ( ! empty( $feeds ) ) {
 			return OneSignalMessage::create()
-			                       ->subject( "{$feeds[0]->organization_location->organization->name}:" )
+			                       ->subject( "{$feeds[0]->organization_location->organization->name} Posted:" )
 			                       ->body( "{$this->feed->content}" );
 		}
 	}
