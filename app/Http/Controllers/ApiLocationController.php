@@ -88,6 +88,11 @@ class ApiLocationController extends Controller
 		return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), $feeds );
 	}
 
+	/**
+	 * @param OrganizationLocation $location
+	 *
+	 * @return mixed
+	 */
 	public function destroy( OrganizationLocation $location )
 	{
 		if ( $location ) {
