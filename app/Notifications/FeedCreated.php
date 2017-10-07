@@ -17,9 +17,9 @@ class FeedCreated extends Notification
 	private $feed;
 
 	/**
-	 * Create a new notification instance.
+	 * FeedCreated constructor.
 	 *
-	 * @return void
+	 * @param Feed $feed
 	 */
 	public function __construct( Feed $feed )
 	{
