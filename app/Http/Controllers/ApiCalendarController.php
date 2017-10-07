@@ -75,8 +75,8 @@ class ApiCalendarController extends Controller
 	public function create( Request $request )
 	{
 		$validation_rules = [
-			//'country'  => 'required',
-			//'city'     => 'required|unique:calendars,city,NULL,id,country,' . $request->input( 'country' ),
+			'country'  => 'nullable',
+			'city'     => 'nullable|unique:calendars,city,NULL,id,country,' . $request->input( 'country' ),
 			'timezone' => 'required'
 		];
 
@@ -90,10 +90,13 @@ class ApiCalendarController extends Controller
 		$timezone = $request->input( 'timezone' );
 		$calendar = Calendar::where( 'timezone', $timezone )->first();
 
+		$city = $request->input('city', false);
+		$country = $request->input('country', false);
+
 		if ( $calendar ) {
 			return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), $calendar );
 		} else {
-			$calendar = $this->create_calendar( $timezone );
+			$calendar = $this->create_calendar( $timezone, $city, $country );
 
 			if ( $calendar && $calendar->id > 0 ) {
 				return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), $calendar );
