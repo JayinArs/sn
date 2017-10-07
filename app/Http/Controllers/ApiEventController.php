@@ -74,8 +74,8 @@ class ApiEventController extends Controller
 			                        'english_date'             => $request->input( 'english_date' ),
 			                        'hijri_date'               => $request->input( 'hijri_date' ),
 			                        'venue'                    => $request->input( 'venue' ),
-			                        'latitude'                 => $latitude,
-			                        'longitude'                => $longitude
+			                        'latitude'                 => $request->input( 'latitude', $latitude ),
+			                        'longitude'                => $request->input( 'longitude', $longitude )
 		                        ] );
 
 		if ( $event->id > 0 ) {
@@ -256,6 +256,11 @@ class ApiEventController extends Controller
 		return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), $events );
 	}
 
+	/**
+	 * @param Request $request
+	 *
+	 * @return mixed
+	 */
 	public function getNearByEvents( Request $request )
 	{
 		$validation_rules = [
@@ -283,6 +288,7 @@ class ApiEventController extends Controller
 		$events = Event::selectRaw( "*, {$select} AS `distance`" )
 		               ->orderBy( 'distance', 'desc' )
 		               ->whereRaw( "{$select} < {$radius}" );
+
 		while ( $events->count() < 1 && $radius < 10 ) {
 			$radius += 1;
 			$events = Event::selectRaw( "*, {$select} AS `distance`" )
