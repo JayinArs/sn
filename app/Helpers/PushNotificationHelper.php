@@ -3,6 +3,7 @@
 namespace App\Helpers;
 
 use App\Event;
+use App\Feed;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Auth;
@@ -18,6 +19,16 @@ class PushNotificationHelper
 	public function __construct()
 	{
 
+	}
+
+	/**
+	 * @param Feed $feed
+	 */
+	private function push_feed( Feed $feed )
+	{
+		Artisan::call( "feed:add", [
+			'id' => $feed->id
+		] );
 	}
 
 	/**
@@ -68,6 +79,9 @@ class PushNotificationHelper
 				break;
 			case "user_events":
 				$this->push_user_events( $args );
+				break;
+			case "feed":
+				$this->push_feed( $args );
 				break;
 		}
 	}

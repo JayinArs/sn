@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Config;
 use Validator;
 use JSONResponse;
 use MultiLang;
+use PushNotification;
 
 class ApiFeedController extends Controller
 {
@@ -55,6 +56,8 @@ class ApiFeedController extends Controller
 					$status[ $location_id ] = true;
 				}
 			}
+
+			PushNotification::notify( 'feed', $feed );
 
 			return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), $status );
 		} else {

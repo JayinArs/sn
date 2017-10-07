@@ -16,6 +16,7 @@ class Kernel extends ConsoleKernel
 		Commands\UpdateCalendars::class,
 		Commands\TestCommand::class,
 		Commands\NotifyAddEvent::class,
+		Commands\NotifyAddFeed::class,
 		Commands\NotifyImportantEvents::class
 	];
 
