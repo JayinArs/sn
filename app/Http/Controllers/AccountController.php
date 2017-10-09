@@ -191,7 +191,7 @@ class AccountController extends Controller
 	{
 		$organizations = [];
 
-		Organization::with( 'meta_data' )
+		Organization::with( ['meta_data', 'locations'] )
 		            ->where( 'account_id', $id )
 		            ->orderBy( 'id', 'desc' )
 		            ->each( function ( $organization ) use ( &$organizations, &$id ) {
