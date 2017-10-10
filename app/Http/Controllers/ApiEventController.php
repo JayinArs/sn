@@ -298,15 +298,15 @@ class ApiEventController extends Controller
 			               ->whereRaw( "{$select} < {$radius}" );
 		}
 
-		$events = $events->paginate( $limit );
+		$paginate = $events->paginate( $limit );
 
 		return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ),
 		                             [
-			                             "events" => $events->get(),
+			                             "events" => $events->forPage( $paginate->currentPage(), $paginate->perPage() )->get(),
 			                             "radius" => $radius
 		                             ], null, [
-			                             "current_page" => $events->currentPage(),
-			                             "total_pages"  => ceil( $events->total() / $events->perPage() )
+			                             "current_page" => $paginate->currentPage(),
+			                             "total_pages"  => ceil( $paginate->total() / $paginate->perPage() )
 		                             ] );
 	}
 }
