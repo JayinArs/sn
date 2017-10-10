@@ -17,6 +17,7 @@
                                 <th>User ID#</th>
                                 <th>Language</th>
                                 <th>IMEI</th>
+                                <th>UDID</th>
                                 <th>Status</th>
                                 <th>Timezone</th>
                                 <th>Registration</th>
@@ -61,6 +62,10 @@
                 {
                     name: 'imei',
                     data: 'imei'
+                },
+                {
+                    name: 'udid',
+                    data: 'udid'
                 },
                 {
                     name: 'status',
