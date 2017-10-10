@@ -278,8 +278,8 @@ class ApiEventController extends Controller
 		$latitude  = $request->input( 'latitude' );
 		$longitude = $request->input( 'longitude' );
 		$radius    = $request->input( 'radius' );
-		$page      = $request->input( 'page', 1 );
-		$limit     = $request->input( 'limit', 5 );
+		$page      = intval( $request->input( 'page', 1 ) );
+		$limit     = intval( $request->input( 'limit', 5 ) );
 
 		if ( ! $request->has( 'radius' ) ) {
 			$radius = 50;
