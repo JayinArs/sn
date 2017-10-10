@@ -14,15 +14,18 @@ use Illuminate\Support\Facades\Config;
 use JSONResponse;
 use Validator;
 use MultiLang;
+use Pagination;
 
 class ApiOrganizationController extends Controller
 {
 	/**
 	 * @param null $account_id
 	 *
+	 * @param Request $request
+	 *
 	 * @return mixed
 	 */
-	public function all( $account_id = null )
+	public function all( $account_id = null, Request $request )
 	{
 		$organizations = [];
 
@@ -54,7 +57,13 @@ class ApiOrganizationController extends Controller
 			            $organizations[] = $org;
 		            } );
 
-		return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), $organizations );
+		$limit    = $request->input( 'limit', 5 );
+		$paginate = Pagination::paginate( $organizations, $limit );
+
+		return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), $paginate->items(), null, [
+			"current_page" => $paginate->currentPage(),
+			"total_pages"  => ceil( $paginate->total() / $paginate->perPage() )
+		] );
 	}
 
 	/**
@@ -66,26 +75,31 @@ class ApiOrganizationController extends Controller
 	public function getSingleOrganization( $id, $account_id = null )
 	{
 		$organization = Organization::with( [ 'meta_data', 'locations' ] )->find( $id );
-		$org          = $organization->toArray();
 
-		$org['followers'] = $org['events'] = 0;
+		if ( $organization ) {
+			$org = $organization->toArray();
 
-		if ( $account_id ) {
-			$org['is_following'] = false;
-		}
-
-		OrganizationLocation::where( 'organization_id', $organization->id )->each( function ( $location ) use ( &$org, &$account_id ) {
-			$org['followers'] += OrganizationFollower::where( 'organization_location_id', $location->id )->count();
-			$org['events']    += Event::where( 'organization_location_id', $location->id )->count();
+			$org['followers'] = $org['events'] = 0;
 
 			if ( $account_id ) {
-				$org['is_following'] = OrganizationFollower::where( 'organization_location_id', $location->id )
-				                                           ->where( 'account_id', $account_id )
-				                                           ->exists();
+				$org['is_following'] = false;
 			}
-		} );
 
-		return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), $org );
+			OrganizationLocation::where( 'organization_id', $organization->id )->each( function ( $location ) use ( &$org, &$account_id ) {
+				$org['followers'] += OrganizationFollower::where( 'organization_location_id', $location->id )->count();
+				$org['events']    += Event::where( 'organization_location_id', $location->id )->count();
+
+				if ( $account_id ) {
+					$org['is_following'] = OrganizationFollower::where( 'organization_location_id', $location->id )
+					                                           ->where( 'account_id', $account_id )
+					                                           ->exists();
+				}
+			} );
+
+			return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), $org );
+		}
+
+		return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.FAILED' ), null, MultiLang::getPhraseByKey( 'strings.organization.not_found' ) );
 	}
 
 	/**
@@ -236,9 +250,11 @@ class ApiOrganizationController extends Controller
 	/**
 	 * @param $id
 	 *
+	 * @param Request $request
+	 *
 	 * @return mixed
 	 */
-	public function locations( $id )
+	public function locations( $id, Request $request )
 	{
 		$locations = [];
 
@@ -255,21 +271,29 @@ class ApiOrganizationController extends Controller
 			$locations[] = $loc;
 		} );
 
-		return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), $locations );
+		$limit    = $request->input( 'limit', 5 );
+		$paginate = Pagination::paginate( $locations, $limit );
+
+		return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), $paginate->items(), null, [
+			"current_page" => $paginate->currentPage(),
+			"total_pages"  => ceil( $paginate->total() / $paginate->perPage() )
+		] );
 	}
 
 	/**
 	 * @param $organization_id
 	 *
+	 * @param Request $request
+	 *
 	 * @return mixed
 	 */
-	public function feeds( $organization_id )
+	public function feeds( $organization_id, Request $request )
 	{
 		$feeds = [];
 
 		$organization = Organization::with( 'locations' )->find( $organization_id );
 
-		if($organization) {
+		if ( $organization ) {
 			foreach ( $organization->locations as $location ) {
 				OrganizationFeed::with( [
 					                        'feed',
@@ -288,32 +312,48 @@ class ApiOrganizationController extends Controller
 			}
 		}
 
-		return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), $feeds );
+		$limit    = $request->input( 'limit', 5 );
+		$paginate = Pagination::paginate( $feeds, $limit );
+
+		return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), $paginate->items(), null, [
+			"current_page" => $paginate->currentPage(),
+			"total_pages"  => ceil( $paginate->total() / $paginate->perPage() )
+		] );
 	}
 
 	/**
 	 * @param $organization_id
 	 *
+	 * @param Request $request
+	 *
 	 * @return mixed
 	 */
-	public function events( $organization_id )
+	public function events( $organization_id, Request $request )
 	{
 		$events = [];
 
 		$organization = Organization::find( $organization_id );
 
-		foreach ( $organization->locations as $location ) {
-			Event::with( [
-				             'meta_data',
-				             'organization_location'
-			             ] )->where( 'organization_location_id', $location->id )->each( function ( $event ) use ( &$events, &$organization ) {
-				$event                 = $event->toArray();
-				$event['organization'] = $organization;
-				$events[]              = $event;
-			} );
+		if ( $organization ) {
+			foreach ( $organization->locations as $location ) {
+				Event::with( [
+					             'meta_data',
+					             'organization_location'
+				             ] )->where( 'organization_location_id', $location->id )->each( function ( $event ) use ( &$events, &$organization ) {
+					$event                 = $event->toArray();
+					$event['organization'] = $organization;
+					$events[]              = $event;
+				} );
+			}
 		}
 
-		return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), $events );
+		$limit    = $request->input( 'limit', 5 );
+		$paginate = Pagination::paginate( $events, $limit );
+
+		return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), $paginate->items(), null, [
+			"current_page" => $paginate->currentPage(),
+			"total_pages"  => ceil( $paginate->total() / $paginate->perPage() )
+		] );
 	}
 
 	/**

@@ -250,10 +250,15 @@ class ApiEventController extends Controller
 		$events = Event::with( [ 'category' ] )
 		               ->where( 'is_system_event', 1 )
 		               ->whereDay( 'hijri_date', $date->day )
-		               ->whereMonth( 'hijri_date', $date->month )
-		               ->get();
+		               ->whereMonth( 'hijri_date', $date->month );
 
-		return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), $events );
+		$limit    = $request->input( 'limit', 5 );
+		$paginate = $events->paginate( $limit );
+
+		return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), $paginate->items(), null, [
+			"current_page" => $paginate->currentPage(),
+			"total_pages"  => ceil( $paginate->total() / $paginate->perPage() )
+		] );
 	}
 
 	/**
@@ -302,7 +307,7 @@ class ApiEventController extends Controller
 
 		return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ),
 		                             [
-			                             "events" => $events->forPage( $paginate->currentPage(), $paginate->perPage() )->get(),
+			                             "events" => $paginate->items(),
 			                             "radius" => $radius
 		                             ], null, [
 			                             "current_page" => $paginate->currentPage(),

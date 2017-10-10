@@ -75,5 +75,11 @@ class AppServiceProvider extends ServiceProvider
 
 			return $geocode;
 		} );
+
+		$this->app->singleton( 'pagination', function ( $app ) {
+			$pagination = new App\Helpers\PaginationHelper();
+
+			return $pagination;
+		} );
 	}
 }

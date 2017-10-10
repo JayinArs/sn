@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Config;
 use JSONResponse;
 use Validator;
 use MultiLang;
+use Pagination;
 
 class ApiLocationController extends Controller
 {
@@ -58,22 +59,35 @@ class ApiLocationController extends Controller
 	 * @param $organization_id
 	 * @param $location_id
 	 *
+	 * @param Request $request
+	 *
 	 * @return mixed
 	 */
-	public function events( $organization_id, $location_id )
+	public function events( $organization_id, $location_id, Request $request )
 	{
-		$events = Event::with( [ 'meta_data', 'category' ] )->where( 'organization_location_id', $location_id )->get();
+		$limit  = $request->input( 'limit', 5 );
+		$events = Event::with( [
+			                       'meta_data',
+			                       'category'
+		                       ] )
+		               ->where( 'organization_location_id', $location_id )
+		               ->paginate( $limit );
 
-		return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), $events );
+		return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), $paginate->items(), null, [
+			"current_page" => $paginate->currentPage(),
+			"total_pages"  => ceil( $paginate->total() / $paginate->perPage() )
+		] );
 	}
 
 	/**
 	 * @param $organization_id
 	 * @param $location_id
 	 *
+	 * @param Request $request
+	 *
 	 * @return mixed
 	 */
-	public function feeds( $organization_id, $location_id )
+	public function feeds( $organization_id, $location_id, Request $request )
 	{
 		$feeds = [];
 
@@ -85,7 +99,13 @@ class ApiLocationController extends Controller
 			$feeds[] = $feed_relation->feed;
 		} );
 
-		return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), $feeds );
+		$limit    = $request->input( 'limit', 5 );
+		$paginate = Pagination::paginate( $feeds, $limit );
+
+		return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), $paginate->items(), null, [
+			"current_page" => $paginate->currentPage(),
+			"total_pages"  => ceil( $paginate->total() / $paginate->perPage() )
+		] );
 	}
 
 	/**

@@ -6,17 +6,20 @@ use App\Event;
 use App\Organization;
 use App\OrganizationFollower;
 use App\OrganizationLocation;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use App\Account;
 use App\User;
 use App\UserRole;
 use Carbon\Carbon;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Validator;
 use JSONResponse;
 use MultiLang;
 use Datatables;
+use Pagination;
 
 class AccountController extends Controller
 {
@@ -185,13 +188,15 @@ class AccountController extends Controller
 	/**
 	 * @param $id
 	 *
+	 * @param Request $request
+	 *
 	 * @return mixed
 	 */
-	public function accountOrganizations( $id )
+	public function accountOrganizations( $id, Request $request )
 	{
 		$organizations = [];
 
-		Organization::with( ['meta_data', 'locations'] )
+		Organization::with( [ 'meta_data', 'locations' ] )
 		            ->where( 'account_id', $id )
 		            ->orderBy( 'id', 'desc' )
 		            ->each( function ( $organization ) use ( &$organizations, &$id ) {
@@ -212,15 +217,23 @@ class AccountController extends Controller
 			            $organizations[] = $org;
 		            } );
 
-		return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), $organizations );
+		$limit    = $request->input( 'limit', 5 );
+		$paginate = Pagination::paginate( $organizations, $limit );
+
+		return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), $paginate->items(), null, [
+			"current_page" => $paginate->currentPage(),
+			"total_pages"  => ceil( $paginate->total() / $paginate->perPage() )
+		] );
 	}
 
 	/**
 	 * @param $id
 	 *
+	 * @param Request $request
+	 *
 	 * @return mixed
 	 */
-	public function accountFollowingOrganizations( $id )
+	public function accountFollowingOrganizations( $id, Request $request )
 	{
 		$temp_organizations = [];
 
@@ -247,9 +260,16 @@ class AccountController extends Controller
 			                    }
 			                    $temp_organizations[ $org['id'] ]['locations'][] = $follower->organization_location;
 		                    } );
+
 		$organizations = array_values( $temp_organizations );
 
-		return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), $organizations );
+		$limit    = $request->input( 'limit', 5 );
+		$paginate = Pagination::paginate( $organizations, $limit );
+
+		return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), $paginate->items(), null, [
+			"current_page" => $paginate->currentPage(),
+			"total_pages"  => ceil( $paginate->total() / $paginate->perPage() )
+		] );
 	}
 
 	/**

@@ -12,6 +12,8 @@ use JSONResponse;
 class ApiPostController extends Controller
 {
 	/**
+	 * @param Request $request
+	 *
 	 * @return mixed
 	 */
 	public function random( Request $request )
