@@ -22,18 +22,24 @@ class ResponseHelper
 	 * @param null $data
 	 * @param null $message
 	 *
+	 * @param null $extras
+	 *
 	 * @return \Illuminate\Http\JsonResponse
 	 */
-	public function encode( $code = 200, $data = null, $message = null )
+	public function encode( $code = 200, $data = null, $message = null, $extras = array() )
 	{
 		$this->json = [];
 
-		if ( $data || ( $code == 200 && !is_null($data) ) ) {
+		if ( $data || ( $code == 200 && ! is_null( $data ) ) ) {
 			$this->json['data'] = $data;
 		}
 
 		if ( $message ) {
 			$this->json['message'] = $message;
+		}
+
+		if ( is_array( $extras ) && ! empty( $extras ) ) {
+			$this->json = array_merge( $this->json, $extras );
 		}
 
 		$this->json['code'] = $code;

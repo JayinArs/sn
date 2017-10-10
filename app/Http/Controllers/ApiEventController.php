@@ -278,6 +278,8 @@ class ApiEventController extends Controller
 		$latitude  = $request->input( 'latitude' );
 		$longitude = $request->input( 'longitude' );
 		$radius    = $request->input( 'radius' );
+		$page      = $request->input( 'page', 1 );
+		$limit     = $request->input( 'limit', 5 );
 
 		if ( ! $request->has( 'radius' ) ) {
 			$radius = 50;
@@ -287,8 +289,9 @@ class ApiEventController extends Controller
 		$select = "( 3959 * acos( cos( radians({$latitude}) ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians({$longitude}) ) + sin( radians({$latitude}) ) * sin( radians( latitude ) ) ) )";
 		$events = Event::selectRaw( "*, {$select} AS `distance`" )
 		               ->orderBy( 'distance', 'desc' )
-		               ->whereRaw( "{$select} < {$radius}" )
-		               ->forPage( $request->input( 'page', 1 ), $request->input( 'limit', 5 ) );
+		               ->whereRaw( "{$select} < {$radius}" );
+		$count  = $events->count();
+		$events = $events->forPage( $page, $limit );
 
 		while ( $events->count() < 1 && $radius < 10 ) {
 			$radius += 1;
@@ -297,9 +300,13 @@ class ApiEventController extends Controller
 			               ->whereRaw( "{$select} < {$radius}" );
 		}
 
-		return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), [
-			"events" => $events->get(),
-			"radius" => $radius
-		] );
+		return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ),
+		                             [
+			                             "events" => $events->get(),
+			                             "radius" => $radius
+		                             ], null, [
+			                             "current_page" => $page,
+			                             "total_pages"  => ceil( $count / $limit )
+		                             ] );
 	}
 }
