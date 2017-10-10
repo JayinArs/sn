@@ -287,7 +287,8 @@ class ApiEventController extends Controller
 		$select = "( 3959 * acos( cos( radians({$latitude}) ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians({$longitude}) ) + sin( radians({$latitude}) ) * sin( radians( latitude ) ) ) )";
 		$events = Event::selectRaw( "*, {$select} AS `distance`" )
 		               ->orderBy( 'distance', 'desc' )
-		               ->whereRaw( "{$select} < {$radius}" );
+		               ->whereRaw( "{$select} < {$radius}" )
+		               ->forPage( $request->input( 'page', 1 ), $request->input( 'limit', 5 ) );
 
 		while ( $events->count() < 1 && $radius < 10 ) {
 			$radius += 1;
