@@ -290,8 +290,6 @@ class ApiEventController extends Controller
 		$events = Event::selectRaw( "*, {$select} AS `distance`" )
 		               ->orderBy( 'distance', 'desc' )
 		               ->whereRaw( "{$select} < {$radius}" );
-		$count  = $events->count();
-		$events = $events->forPage( $page, $limit );
 
 		while ( $events->count() < 1 && $radius < 10 ) {
 			$radius += 1;
@@ -300,13 +298,15 @@ class ApiEventController extends Controller
 			               ->whereRaw( "{$select} < {$radius}" );
 		}
 
+		$events = $events->paginate( $limit );
+
 		return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ),
 		                             [
 			                             "events" => $events->get(),
 			                             "radius" => $radius
 		                             ], null, [
-			                             "current_page" => $page,
-			                             "total_pages"  => ceil( $count / $limit )
+			                             "current_page" => $events->currentPage(),
+			                             "total_pages"  => ceil( $events->total() / $events->perPage() )
 		                             ] );
 	}
 }
