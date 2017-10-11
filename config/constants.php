@@ -95,5 +95,8 @@ return [
 			'every-friday'    => 'Every Friday',
 			'every-saturday'  => 'Every Saturday'
 		]
+	],
+	'organization'   => [
+		'image_path' => 'img/organization/profile/'
 	]
 ];

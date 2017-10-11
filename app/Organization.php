@@ -70,4 +70,12 @@ class Organization extends Model
 	{
 		return $this->hasMany( 'App\OrganizationLocation', 'organization_id', 'id' );
 	}
+
+	/**
+	 * @return array
+	 */
+	public static function getMetaKeys()
+	{
+		return [ 'image' ];
+	}
 }

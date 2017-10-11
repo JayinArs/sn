@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Event;
+use App\File;
 use App\Organization;
 use App\OrganizationFeed;
 use App\OrganizationFollower;
@@ -110,7 +111,8 @@ class ApiOrganizationController extends Controller
 	{
 		$validation_rules = [
 			'name'       => 'required',
-			'account_id' => 'required|exists:accounts,id'
+			'account_id' => 'required|exists:accounts,id',
+			'image'      => 'mimes:jpeg,bmp,png|max:1024'
 		];
 
 		$validator = Validator::make( $request->all(), $validation_rules );
@@ -128,6 +130,37 @@ class ApiOrganizationController extends Controller
 		                                      ] );
 
 		if ( $organization->id > 0 ) {
+
+			if ( $request->hasFile( 'image' ) ) {
+				$file     = $request->file( 'image' );
+				$filename = $organization->id . '.' . $file->clientExtension();
+				$path     = Config::get( 'constants.organization.image_path' );
+				$f        = $file->move( public_path( $path ), $filename );
+
+				if ( $f->isReadable() ) {
+					$file = File::create( [
+						                      'data'      => "data:image/jpg;base64," . base64_encode( file_get_contents( $f->getRealPath() ) ),
+						                      'url'       => $path . $filename,
+						                      'path'      => $f->getPath(),
+						                      'mime_type' => $f->getMimeType()
+					                      ] );
+
+					if ( $file->id > 0 ) {
+						$file = File::find( $file->id );
+
+						OrganizationMeta::updateOrCreate( [
+							                                  'organization_id' => $organization->id,
+							                                  'key'             => 'image'
+						                                  ], [
+							                                  'value' => json_encode( [
+								                                                          'id'  => $file->id,
+								                                                          'url' => $file->url
+							                                                          ] )
+						                                  ] );
+					}
+				}
+			}
+
 			$organization = Organization::find( $organization->id );
 
 			return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), $organization );
@@ -169,6 +202,36 @@ class ApiOrganizationController extends Controller
 		$organization->fill( $data );
 
 		if ( $organization->save() ) {
+			if ( $request->hasFile( 'image' ) ) {
+				$file     = $request->file( 'image' );
+				$filename = $organization->id . '.' . $file->clientExtension();
+				$path     = Config::get( 'constants.organization.image_path' );
+				$f        = $file->move( public_path( $path ), $filename );
+
+				if ( $f->isReadable() ) {
+					$file = File::create( [
+						                      'data'      => "data:image/jpg;base64," . base64_encode( file_get_contents( $f->getRealPath() ) ),
+						                      'url'       => $path . $filename,
+						                      'path'      => $f->getPath(),
+						                      'mime_type' => $f->getMimeType()
+					                      ] );
+
+					if ( $file->id > 0 ) {
+						$file = File::find( $file->id );
+
+						OrganizationMeta::updateOrCreate( [
+							                                  'organization_id' => $organization->id,
+							                                  'key'             => 'image'
+						                                  ], [
+							                                  'value' => json_encode( [
+								                                                          'id'  => $file->id,
+								                                                          'url' => $file->url
+							                                                          ] )
+						                                  ] );
+					}
+				}
+			}
+
 			return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), null, MultiLang::getPhraseByKey( 'strings.organization.update_success' ) );
 		} else {
 			return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.FAILED' ), null, MultiLang::getPhraseByKey( 'strings.organization.update_failed' ) );
