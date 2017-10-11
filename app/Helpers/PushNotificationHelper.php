@@ -47,7 +47,7 @@ class PushNotificationHelper
 	private function push_system_events( $args )
 	{
 		Artisan::call( "event:notify", [
-			'--system',
+			'--system'   => true,
 			'--timezone' => $args['timezone'],
 			'date'       => $args['date']
 		] );

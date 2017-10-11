@@ -80,12 +80,11 @@ class UpdateCalendars extends Command
 							        'date'     => $current_date['date']
 						        ] );
 
-						        /*
 						        PushNotification::notify( 'user_events', [
 							        'timezone' => $calendar->timezone,
 							        'date'     => $current_date['date']
 						        ] );
-						        */
+
 						        echo 'updated: ' . $current_date['date'] . '\n';
 					        }
 				        }
