@@ -64,22 +64,18 @@ class NotifyImportantEvents extends Command
 				     $users = User::where( 'timezone', $timezone )->get();
 				     Notification::send( $users, new ImportantDate( $event ) );
 
-				     $this->info( "Notified: {$event->title} to " . count($users) . " users." );
+				     $this->info( "Notified: {$event->title} to " . count( $users ) . " users." );
 			     } );
 		} else {
 
 			$calendar = Calendar::where( 'timezone', $timezone )->first();
 
 			if ( $calendar ) {
-				Event::with( [
-					             'organization_location' => function ( $query ) use ( &$calendar ) {
-						             $query->where( 'country', $calendar->country )
-						                   ->where( [
-							                            'city'  => $calendar->city,
-							                            'state' => $calendar->state
-						                            ] );
-					             }
-				             ] )
+				Event::whereHas( 'organization_location', function ( $query ) use ( &$calendar ) {
+					$query->where( 'country', $calendar->country )
+					      ->where( 'city', $calendar->city )
+					      ->where( 'city', $calendar->state );
+				} )
 				     ->where( 'is_system_event', 0 )
 				     ->whereDay( 'hijri_date', $date->day )
 				     ->whereMonth( 'hijri_date', $date->month )

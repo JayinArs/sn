@@ -71,13 +71,6 @@ class ApiAuthController extends Controller
 			return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.NOT_FOUND' ), null, MultiLang::getPhraseByKey( 'strings.user.device_id_not_found' ) );
 		}
 
-		User::where( 'udid', $request->input( 'udid' ) )->each( function ( $user ) {
-			$user->udid   = null;
-			$user->status = 'inactive';
-
-			$user->save();
-		} );
-
 		$user = User::firstOrCreate( [
 			                             'imei' => $request->input( 'imei' ),
 		                             ] );

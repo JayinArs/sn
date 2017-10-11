@@ -70,6 +70,14 @@ class User extends Model
 	}
 
 	/**
+	 * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+	 */
+	public function account()
+	{
+		return $this->belongsTo( 'App\Account', 'account_id' );
+	}
+
+	/**
 	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
 	 */
 	public function meta_data_obj()

@@ -37,7 +37,7 @@ class ApiCalendarController extends Controller
 	private function create_calendar( $timezone, $city = false, $country = false )
 	{
 		if ( ! $city || ! $country ) {
-			$region = Geocode::regionLookup( $timezone );
+			$region = Geocode::regionLookup( $timezone, true );
 
 			if ( ! empty( $region['country'] ) ) {
 				$country = $region['country'];
@@ -90,8 +90,8 @@ class ApiCalendarController extends Controller
 		$timezone = $request->input( 'timezone' );
 		$calendar = Calendar::where( 'timezone', $timezone )->first();
 
-		$city = $request->input('city', false);
-		$country = $request->input('country', false);
+		$city    = $request->input( 'city', false );
+		$country = $request->input( 'country', false );
 
 		if ( $calendar ) {
 			return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), $calendar );

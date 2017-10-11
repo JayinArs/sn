@@ -63,9 +63,11 @@ class GeocodeHelper
 	/**
 	 * @param $timezone
 	 *
+	 * @param bool $short_name
+	 *
 	 * @return array
 	 */
-	public function regionLookup( $timezone )
+	public function regionLookup( $timezone, $short_name = false )
 	{
 		$components = [];
 		$response   = $this->lookup( $timezone );
@@ -75,6 +77,10 @@ class GeocodeHelper
 			foreach ( $address_components as $component ) {
 				foreach ( $component["types"] as $type ) {
 					$components[ $type ] = $component["long_name"];
+
+					if ( $short_name ) {
+						$components[ $type ] = $component["short_name"];
+					}
 				}
 			}
 		}
