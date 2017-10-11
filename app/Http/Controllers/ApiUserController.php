@@ -28,7 +28,7 @@ class ApiUserController extends Controller
 	 */
 	public function data()
 	{
-		$users = User::with( 'meta_data' )->get();
+		$users = User::all();
 
 		return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), $users );
 	}
@@ -40,7 +40,7 @@ class ApiUserController extends Controller
 	 */
 	private function get_user( $id )
 	{
-		return User::with( 'meta_data' )->find( $id );
+		return User::find( $id );
 	}
 
 	/**

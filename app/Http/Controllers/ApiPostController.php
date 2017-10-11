@@ -18,7 +18,7 @@ class ApiPostController extends Controller
 	 */
 	public function random( Request $request )
 	{
-		$post = Post::with( 'meta_data' )->inRandomOrder()->first();
+		$post = Post::inRandomOrder()->first();
 
 		if ( $request->hasHeader( 'Content-Type' ) && $post ) {
 			$language = Language::where( 'code', $request->header( 'Content-Type' ) )->first();

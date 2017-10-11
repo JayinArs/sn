@@ -67,7 +67,6 @@ class ApiLocationController extends Controller
 	{
 		$limit    = $request->input( 'limit', 5 );
 		$paginate = Event::with( [
-			                         'meta_data',
 			                         'category'
 		                         ] )
 		                 ->where( 'organization_location_id', $location_id )
@@ -93,8 +92,7 @@ class ApiLocationController extends Controller
 
 		OrganizationFeed::with( [
 			                        'feed',
-			                        'feed.user',
-			                        'feed.user.meta_data'
+			                        'feed.user'
 		                        ] )->where( 'organization_location_id', $location_id )->each( function ( $feed_relation ) use ( &$feeds ) {
 			$feeds[] = $feed_relation->feed;
 		} );

@@ -35,7 +35,7 @@ class OrganizationController extends Controller
 	{
 		$organizations = [];
 
-		Organization::with( 'meta_data' )->each( function ( $organization ) use ( &$organizations ) {
+		Organization::all()->each( function ( $organization ) use ( &$organizations ) {
 			$org = $organization->toArray();
 
 			$org['followers'] = $org['events'] = 0;

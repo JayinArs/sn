@@ -196,7 +196,7 @@ class AccountController extends Controller
 	{
 		$organizations = [];
 
-		Organization::with( [ 'meta_data', 'locations' ] )
+		Organization::with( [ 'locations' ] )
 		            ->where( 'account_id', $id )
 		            ->orderBy( 'id', 'desc' )
 		            ->each( function ( $organization ) use ( &$organizations, &$id ) {
@@ -238,8 +238,7 @@ class AccountController extends Controller
 		$temp_organizations = [];
 
 		OrganizationFollower::with( [
-			                            'organization_location.organization',
-			                            'organization_location.organization.meta_data'
+			                            'organization_location.organization'
 		                            ] )
 		                    ->where( 'account_id', $id )
 		                    ->orderBy( 'id', 'desc' )

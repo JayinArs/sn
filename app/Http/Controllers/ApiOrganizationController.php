@@ -30,7 +30,6 @@ class ApiOrganizationController extends Controller
 		$organizations = [];
 
 		Organization::with( [
-			                    'meta_data',
 			                    'locations'
 		                    ] )
 		            ->orderBy( 'id', 'desc' )
@@ -74,7 +73,7 @@ class ApiOrganizationController extends Controller
 	 */
 	public function getSingleOrganization( $id, $account_id = null )
 	{
-		$organization = Organization::with( [ 'meta_data', 'locations' ] )->find( $id );
+		$organization = Organization::with( [ 'locations' ] )->find( $id );
 
 		if ( $organization ) {
 			$org = $organization->toArray();
@@ -129,7 +128,7 @@ class ApiOrganizationController extends Controller
 		                                      ] );
 
 		if ( $organization->id > 0 ) {
-			$organization = Organization::with( 'meta_data' )->find( $organization->id );
+			$organization = Organization::find( $organization->id );
 
 			return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), $organization );
 		} else {
@@ -297,8 +296,7 @@ class ApiOrganizationController extends Controller
 			foreach ( $organization->locations as $location ) {
 				OrganizationFeed::with( [
 					                        'feed',
-					                        'feed.user',
-					                        'feed.user.meta_data'
+					                        'feed.user'
 				                        ] )
 				                ->where( 'organization_location_id', $location->id )
 				                ->orderBy( 'id', 'desc' )
@@ -337,7 +335,6 @@ class ApiOrganizationController extends Controller
 		if ( $organization ) {
 			foreach ( $organization->locations as $location ) {
 				Event::with( [
-					             'meta_data',
 					             'organization_location'
 				             ] )
 				     ->where( 'organization_location_id', $location->id )

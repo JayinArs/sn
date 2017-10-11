@@ -35,7 +35,7 @@ class ApiAuthController extends Controller
 			return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.FAILED' ), null, MultiLang::getPhrase( $messages[0] ) );
 		}
 
-		$user = User::with( 'meta_data' )->where( 'imei', $request->input( 'imei' ) )->first();
+		$user = User::where( 'imei', $request->input( 'imei' ) )->first();
 
 		if ( ! empty( $user ) ) {
 			$token = Token::updateToken( $user, $request->input( 'timezone', 'UTC' ) );
@@ -85,7 +85,7 @@ class ApiAuthController extends Controller
 		             ] );
 
 		if ( $user->save() ) {
-			$user = User::with( 'meta_data' )->find( $user->id );
+			$user = User::find( $user->id );
 
 			return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), $user );
 		} else {
