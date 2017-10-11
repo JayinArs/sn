@@ -10,6 +10,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use NotificationChannels\OneSignal\OneSignalChannel;
 use NotificationChannels\OneSignal\OneSignalMessage;
+use Hijri;
 
 class ImportantDate extends Notification
 {
@@ -61,11 +62,11 @@ class ImportantDate extends Notification
 	 */
 	public function toOneSignal( $notifiable )
 	{
-		$date = Carbon::parse( $this->event->hijri_date );
+		$date = Hijri::parse( $this->event->hijri_date );
 
 		return OneSignalMessage::create()
 		                       ->subject( "{$this->event->title}" )
-		                       ->body( "{$date->toFormattedDateString()}" );
+		                       ->body( "{$date}" );
 	}
 
 	/**
