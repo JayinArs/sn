@@ -3,6 +3,7 @@
 namespace App\Notifications;
 
 use App\Event;
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -60,9 +61,11 @@ class ImportantDate extends Notification
 	 */
 	public function toOneSignal( $notifiable )
 	{
+		$date = Carbon::parse( $this->event->hijri_date );
+
 		return OneSignalMessage::create()
 		                       ->subject( "{$this->event->title}" )
-		                       ->body( "{$this->event->category->name}" );
+		                       ->body( "{$date->toFormattedDateString()}" );
 	}
 
 	/**
