@@ -61,12 +61,9 @@ class NotifyImportantEvents extends Command
 			     ->whereMonth( 'hijri_date', $date->month )
 			     ->each( function ( $event ) use ( &$timezone ) {
 
-				     User::where( 'timezone', $timezone )
-				         ->each( function ( $user ) use ( &$event ) {
+				     $users = User::where( 'timezone', $timezone )->get();
+				     Notification::send( $users, new ImportantDate( $event ) );
 
-					         $user->notify( new ImportantDate( $event ) );
-
-				         } );
 				     $this->info( "Notified: {$event->title}" );
 			     } );
 		} else {
