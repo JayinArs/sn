@@ -13,8 +13,8 @@
                     @if($is_system)
                         <fieldset>
                             <div class="form-group">
-                                <label class="col-md-1 col-sm-2 control-label">Category:</label>
-                                <div class="col-md-11 col-sm-10">
+                                <label class="col-md-2 col-sm-2 text-right control-label">Category:</label>
+                                <div class="col-md-10 col-sm-10">
                                     {{ Form::select('category', $categories, $event->category_id, ['class' => 'form-control']) }}
                                 </div>
                             </div>
@@ -22,17 +22,36 @@
                     @endif
                     <fieldset>
                         <div class="form-group">
-                            <label class="col-md-1 col-sm-2 control-label">Title:</label>
-                            <div class="col-md-11 col-sm-10">
+                            <label class="col-md-2 col-sm-2 text-right control-label">Title:</label>
+                            <div class="col-md-10 col-sm-10">
                                 {{ Form::text('title', $event->title, ['class' => 'form-control']) }}
                             </div>
                         </div>
                     </fieldset>
                     <fieldset>
                         <div class="form-group">
-                            <label class="col-md-1 col-sm-2 control-label">Hijri Date:</label>
-                            <div class="col-md-11 col-sm-10">
+                            <label class="col-md-2 col-sm-2 text-right control-label">Hijri Date:</label>
+                            <div class="col-md-10 col-sm-10">
                                 {!! Hijri::get_field($event->hijri_date, false, false, false, false) !!}
+                            </div>
+                        </div>
+                    </fieldset>
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="col-md-2 col-sm-2 text-right control-label">Recurring Event:</label>
+                            <div class="col-md-10 col-sm-10">
+                                <label class="switch">
+                                    {!! Form::checkbox( 'is_recurring', true, $event->is_recurring, [ 'id' => 'cb_is_recurring' ] ) !!}
+                                    <span></span>
+                                </label>
+                            </div>
+                        </div>
+                    </fieldset>
+                    <fieldset id="recurring-type" style="display: {!! $event->is_recurring ? "block" : "none" !!};">
+                        <div class="form-group">
+                            <label class="col-md-2 col-sm-2 text-right control-label">Recurring Type:</label>
+                            <div class="col-md-10 col-sm-10">
+                                {!! Form::select( 'recurring_type', $recurring_types, (isset($event->meta_data['recurring_type']) ? $event->meta_data['recurring_type'] : false), [ 'class' => 'form-control' ] ) !!}
                             </div>
                         </div>
                     </fieldset>
@@ -74,6 +93,13 @@
             });
 
             return false;
+        });
+
+        $("#cb_is_recurring").on("change", function () {
+            if ($(this).is(":checked"))
+                $("fieldset#recurring-type").slideDown();
+            else
+                $("fieldset#recurring-type").slideUp();
         });
     });
 </script>

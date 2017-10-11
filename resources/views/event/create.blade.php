@@ -99,6 +99,25 @@
                             </div>
                         </fieldset>
                     @endif
+                    <fieldset>
+                        <div class="form-group">
+                            <label class="col-md-2 col-sm-2 text-right control-label">Recurring Event:</label>
+                            <div class="col-md-10 col-sm-10">
+                                <label class="switch">
+                                    {!! Form::checkbox( 'is_recurring', true, false, [ 'id' => 'cb_is_recurring' ] ) !!}
+                                    <span></span>
+                                </label>
+                            </div>
+                        </div>
+                    </fieldset>
+                    <fieldset id="recurring-type" style="display: none;">
+                        <div class="form-group">
+                            <label class="col-md-2 col-sm-2 text-right control-label">Recurring Type:</label>
+                            <div class="col-md-10 col-sm-10">
+                                {!! Form::select( 'recurring_type', $recurring_types, false, [ 'class' => 'form-control' ] ) !!}
+                            </div>
+                        </div>
+                    </fieldset>
                     <div class="form-group text-right">
                         <div class="col-md-12">
                             <input type="submit" class="btn btn-success" value="Publish"/>
@@ -139,14 +158,21 @@
             return false;
         });
 
-        $("#cb_is_hijri_date").on("change", function() {
-            if($(this).is(":checked"))
+        $("#cb_is_hijri_date").on("change", function () {
+            if ($(this).is(":checked"))
                 $("fieldset#english-date").slideUp();
             else
                 $("fieldset#english-date").slideDown();
         });
 
-        $("#select-organization").on("change", function() {
+        $("#cb_is_recurring").on("change", function () {
+            if ($(this).is(":checked"))
+                $("fieldset#recurring-type").slideDown();
+            else
+                $("fieldset#recurring-type").slideUp();
+        });
+
+        $("#select-organization").on("change", function () {
             var $organization_id = $(this).val();
             var $selector = $("#select-organization-location");
 
@@ -161,8 +187,8 @@
                 success: function (data) {
                     $selector.empty();
 
-                    data.map(function(location) {
-                        $selector.append('<option value="'+location.id+'">' + location.city + ', ' + location.country + '</option>');
+                    data.map(function (location) {
+                        $selector.append('<option value="' + location.id + '">' + location.city + ', ' + location.country + '</option>');
                     });
 
                     $selector.removeAttr("disabled");

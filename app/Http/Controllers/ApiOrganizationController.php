@@ -339,11 +339,15 @@ class ApiOrganizationController extends Controller
 				Event::with( [
 					             'meta_data',
 					             'organization_location'
-				             ] )->where( 'organization_location_id', $location->id )->each( function ( $event ) use ( &$events, &$organization ) {
-					$event                 = $event->toArray();
-					$event['organization'] = $organization;
-					$events[]              = $event;
-				} );
+				             ] )
+				     ->where( 'organization_location_id', $location->id )
+				     ->orderBy( 'hijri_date', 'asc' )
+				     ->orderBy( 'english_date', 'asc' )
+				     ->each( function ( $event ) use ( &$events, &$organization ) {
+					     $event                 = $event->toArray();
+					     $event['organization'] = $organization;
+					     $events[]              = $event;
+				     } );
 			}
 		}
 

@@ -65,13 +65,13 @@ class ApiLocationController extends Controller
 	 */
 	public function events( $organization_id, $location_id, Request $request )
 	{
-		$limit  = $request->input( 'limit', 5 );
-		$events = Event::with( [
-			                       'meta_data',
-			                       'category'
-		                       ] )
-		               ->where( 'organization_location_id', $location_id )
-		               ->paginate( $limit );
+		$limit    = $request->input( 'limit', 5 );
+		$paginate = Event::with( [
+			                         'meta_data',
+			                         'category'
+		                         ] )
+		                 ->where( 'organization_location_id', $location_id )
+		                 ->paginate( $limit );
 
 		return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.SUCCESS' ), $paginate->items(), null, [
 			"current_page" => $paginate->currentPage(),

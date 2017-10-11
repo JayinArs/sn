@@ -83,5 +83,17 @@ return [
 		'Imam Ali Naqi (A.S)'       => 'Imam Ali Naqi (A.S)',
 		'Imam Hassan Askari (A.S)'  => 'Imam Hassan Askari (A.S)',
 		'Imam Mehdi (A.S)'          => 'Imam Mehdi (A.S)'
+	],
+	'recurring'      => [
+		'types' => [
+			'yearly'          => 'Yearly',
+			'every-sunday'    => 'Every Sunday',
+			'every-monday'    => 'Every Monday',
+			'every-tuesday'   => 'Every Tuesday',
+			'every-wednesday' => 'Every Wednesday',
+			'every-thursday'  => 'Every Thursday',
+			'every-friday'    => 'Every Friday',
+			'every-saturday'  => 'Every Saturday'
+		]
 	]
 ];

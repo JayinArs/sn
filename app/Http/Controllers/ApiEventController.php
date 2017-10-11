@@ -63,12 +63,15 @@ class ApiEventController extends Controller
 			}
 		}
 
+		$is_recurring = $request->input( 'recurring', '0' ) == '1';
+
 		$event = Event::create( [
 			                        'title'                    => $request->input( 'title' ),
 			                        'organization_location_id' => $request->input( 'organization_location_id' ),
 			                        'user_id'                  => $request->input( 'user_id' ),
 			                        'account_id'               => $request->input( 'account_id' ),
 			                        'is_system_event'          => 0,
+			                        'is_recurring'             => $is_recurring ? 1 : 0,
 			                        'start_time'               => $request->input( 'start_time' ),
 			                        'end_time'                 => $request->input( 'end_time', $request->input( 'start_time' ) ),
 			                        'english_date'             => $request->input( 'english_date' ),
@@ -150,12 +153,15 @@ class ApiEventController extends Controller
 			}
 		}
 
+		$is_recurring = $request->input( 'recurring', '0' ) == '1';
+
 		$event->fill( [
 			              'title'                    => $request->input( 'title' ),
 			              'organization_location_id' => $request->input( 'organization_location_id' ),
 			              'user_id'                  => $request->input( 'user_id' ),
 			              'account_id'               => $request->input( 'account_id' ),
 			              'is_system_event'          => 0,
+			              'is_recurring'             => $is_recurring ? 1 : 0,
 			              'start_time'               => $request->input( 'start_time' ),
 			              'end_time'                 => $request->input( 'end_time', $request->input( 'start_time' ) ),
 			              'english_date'             => $request->input( 'english_date' ),

@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Event;
 use App\EventCategory;
+use App\EventMeta;
 use App\Organization;
 use Illuminate\Http\Request;
 use Datatables;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Config;
 use Validator;
 use Hijri;
 
@@ -38,6 +40,8 @@ class EventController extends Controller
 	{
 		return Datatables::of( Event::with( [ 'category', 'organization_location.organization' ] )
 		                            ->where( 'is_system_event', 0 )
+		                            ->orderBy( 'hijri_date', 'asc' )
+		                            ->orderBy( 'english_date', 'asc' )
 		                            ->get() )->make( true );
 	}
 
@@ -48,6 +52,8 @@ class EventController extends Controller
 	{
 		return Datatables::of( Event::with( [ 'category', 'organization_location.organization' ] )
 		                            ->where( 'is_system_event', 1 )
+		                            ->orderBy( 'hijri_date', 'asc' )
+		                            ->orderBy( 'english_date', 'asc' )
 		                            ->get() )->make( true );
 	}
 
@@ -86,10 +92,11 @@ class EventController extends Controller
 		} );
 
 		return view( 'event.create', [
-			'is_system'     => false,
-			'months'        => $months,
-			'days'          => $days,
-			'organizations' => $organizations
+			'is_system'       => false,
+			'months'          => $months,
+			'days'            => $days,
+			'organizations'   => $organizations,
+			'recurring_types' => Config::get( 'constants.recurring.types' )
 		] );
 	}
 
@@ -100,7 +107,11 @@ class EventController extends Controller
 	{
 		$categories = $this->get_categories();
 
-		return view( 'event.create', [ 'is_system' => true, 'categories' => $categories ] );
+		return view( 'event.create', [
+			'is_system'       => true,
+			'categories'      => $categories,
+			'recurring_types' => Config::get( 'constants.recurring.types' )
+		] );
 	}
 
 	/**
@@ -123,6 +134,7 @@ class EventController extends Controller
 			"date.day"                 => "required_without:is_hijri_date",
 			"date.month"               => "required_without:is_hijri_date",
 			"date.year"                => "required_without:is_hijri_date",
+			"recurring_type"           => "required_if:is_recurring,1",
 		];
 
 		$validator = Validator::make( $request->all(), $validation_rules );
@@ -139,12 +151,14 @@ class EventController extends Controller
 
 		$is_hijri_date = $request->has( 'is_hijri_date' ) && $request->input( 'is_hijri_date' ) == '1';
 		$date          = Hijri::parse( $request->input( 'islamic.month' ), $request->input( 'islamic.day' ) );
+		$is_recurring  = $request->input( 'recurring', '0' ) == '1';
 
 		$event = Event::create( [
 			                        'title'                    => $request->input( 'title' ),
-			                        'hijri_date'               => $is_hijri_date ? $date->format( 'Y-m-d' ) : null,
-			                        'english_date'             => ! $is_hijri_date ? $date->format( 'Y-m-d' ) : null,
+			                        'hijri_date'               => ( $is_hijri_date ? $date->format( 'Y-m-d' ) : null ),
+			                        'english_date'             => ( ! $is_hijri_date ? $date->format( 'Y-m-d' ) : null ),
 			                        'is_system_event'          => 0,
+			                        'is_recurring'             => $is_recurring ? 1 : 0,
 			                        'account_id'               => $user->id,
 			                        'organization_location_id' => $request->input( 'organization_location_id' ),
 			                        'start_time'               => $request->input( 'time' ),
@@ -153,6 +167,18 @@ class EventController extends Controller
 		                        ] );
 
 		if ( $event->id > 0 ) {
+			$meta_keys = Event::getMetaKeys();
+
+			foreach ( $meta_keys as $key ) {
+				if ( $request->has( $key ) ) {
+					EventMeta::create( [
+						                   'event_id' => $event->id,
+						                   'key'      => $key,
+						                   'value'    => $request->input( $key )
+					                   ] );
+				}
+			}
+
 			return response()->json( [
 				                         'status'  => 'success',
 				                         'message' => 'Event created successfully'
@@ -199,6 +225,7 @@ class EventController extends Controller
 			                        'title'           => $request->input( 'title' ),
 			                        'hijri_date'      => $date->format( 'Y-m-d' ),
 			                        'is_system_event' => 1,
+			                        'is_recurring'    => 1,
 			                        'account_id'      => $user->id,
 			                        'category_id'     => $category
 		                        ] );
@@ -237,7 +264,11 @@ class EventController extends Controller
 	 */
 	public function edit( Event $event )
 	{
-		return view( 'event.edit', [ 'is_system' => false, 'event' => $event ] );
+		return view( 'event.edit', [
+			'is_system'       => false,
+			'event'           => $event,
+			'recurring_types' => Config::get( 'constants.recurring.types' )
+		] );
 	}
 
 	/**
@@ -252,7 +283,12 @@ class EventController extends Controller
 			$event->category_id = 'other';
 		}
 
-		return view( 'event.edit', [ 'is_system' => true, 'event' => $event, 'categories' => $categories ] );
+		return view( 'event.edit', [
+			'is_system'       => true,
+			'event'           => $event,
+			'categories'      => $categories,
+			'recurring_types' => Config::get( 'constants.recurring.types' )
+		] );
 	}
 
 	/**
@@ -291,20 +327,35 @@ class EventController extends Controller
 			                         ] );
 		}
 
-		$date     = Hijri::parse( $request->input( 'islamic.month' ), $request->input( 'islamic.day' ) );
-		$category = $request->input( 'category' );
+		$date         = Hijri::parse( $request->input( 'islamic.month' ), $request->input( 'islamic.day' ) );
+		$category     = $request->input( 'category' );
+		$is_recurring = $request->input( 'recurring', '0' ) == '1';
 
 		if ( $category == 'other' ) {
 			$category = null;
 		}
 
 		$event->fill( [
-			              'category_id' => $category,
-			              'hijri_date'  => $date->format( 'Y-m-d' ),
-			              'title'       => $request->input( 'title' )
+			              'category_id'  => $category,
+			              'hijri_date'   => $date->format( 'Y-m-d' ),
+			              'title'        => $request->input( 'title' ),
+			              'is_recurring' => $is_recurring ? 1 : 0
 		              ] );
 
 		if ( $event->save() ) {
+			$meta_keys = Event::getMetaKeys();
+
+			foreach ( $meta_keys as $key ) {
+				if ( $request->has( $key ) ) {
+					EventMeta::updateOrCreate( [
+						                           'event_id' => $event->id,
+						                           'key'      => $key,
+					                           ], [
+						                           'value' => $request->input( $key )
+					                           ] );
+				}
+			}
+
 			return response()->json( [
 				                         'status'  => 'success',
 				                         'message' => 'Event updated successfully'

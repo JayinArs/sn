@@ -1,7 +1,8 @@
 @extends('layouts.app')
 
 @section('top')
-    <a href="{{ $is_system ? route('event.system.create') : route('event.create') }}" class="btn btn-success">Add New</a>
+    <a href="{{ $is_system ? route('event.system.create') : route('event.create') }}" class="btn btn-success">Add
+        New</a>
 @endsection
 
 @section('content')
@@ -19,6 +20,7 @@
                                 <th>Title</th>
                                 <th>Category</th>
                                 <th>Circle</th>
+                                <th>Recurring</th>
                                 <th>Action</th>
                             </tr>
                             </thead>
@@ -54,7 +56,7 @@
                 },
                 {
                     name: 'date',
-                    data: function(row) {
+                    data: function (row) {
                         var d = (row.hijri_date ? window.custom.parse_hij_date(row.hijri_date) : '');
                         d += (row.english_date ? window.custom.parse_eng_date(row.english_date) : '');
 
@@ -67,18 +69,24 @@
                 },
                 {
                     name: 'category.name',
-                    data: function(row) {
+                    data: function (row) {
                         return (row.category ? row.category.name : 'No category chosen');
                     }
                 },
                 {
                     name: 'organization_location.organization',
-                    data: function(row) {
-                        if(row.organization_location && row.organization_location.organization) {
+                    data: function (row) {
+                        if (row.organization_location && row.organization_location.organization) {
                             return row.organization_location.organization.name + ', ' + row.organization_location.country;
                         }
 
                         return 'No organization';
+                    }
+                },
+                {
+                    name: 'is_recurring',
+                    data: function (row) {
+                        return row.is_recurring == 1 ? "Yes (" + row.meta_data.recurring_type + ")" : "No";
                     }
                 },
                 {

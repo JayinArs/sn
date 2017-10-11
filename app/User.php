@@ -32,11 +32,34 @@ class User extends Model
 	 * @var array
 	 */
 	protected $hidden = [
-		'api_token'
+		'api_token',
+		'meta_data_obj'
+	];
+
+	protected $appends = [
+		'meta_data'
 	];
 
 	protected $table = 'users';
 	public $timestamps = false;
+
+	/**
+	 * @return array|mixed
+	 */
+	public function getMetaDataAttribute()
+	{
+		$values = $this->meta_data_obj;
+
+		if ( ! empty( $values ) ) {
+			$new_values = [];
+			foreach ( $values as $value ) {
+				$new_values[ $value["key"] ] = $value["value"];
+			}
+			$values = $new_values;
+		}
+
+		return $values;
+	}
 
 	/**
 	 * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -49,7 +72,7 @@ class User extends Model
 	/**
 	 * @return \Illuminate\Database\Eloquent\Relations\HasMany
 	 */
-	public function meta_data()
+	public function meta_data_obj()
 	{
 		return $this->hasMany( 'App\UserMeta', 'user_id', 'id' );
 	}

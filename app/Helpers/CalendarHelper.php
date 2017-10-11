@@ -39,17 +39,31 @@ class CalendarHelper
 	 * @param $month
 	 * @param $day
 	 *
+	 * @param bool $year
+	 *
 	 * @return string
+	 * @internal param bool $timezone
+	 *
 	 */
 	public function parse( $month, $day, $year = false )
 	{
 		if ( ! $year ) {
-			$year = date( 'Y' );
+			$year = $this->getCurrentYear();
 		}
 
 		$str = $year . '-' . $month . '-' . $day;
 
 		return Carbon::parse( $str );
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getCurrentYear()
+	{
+		$current_date = App\Calendar::distinct()->first( [ 'current_date' ] );
+
+		return Carbon::parse( $current_date->current_date )->year;
 	}
 
 	/**

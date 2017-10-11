@@ -17,7 +17,8 @@ class Kernel extends ConsoleKernel
 		Commands\TestCommand::class,
 		Commands\NotifyAddEvent::class,
 		Commands\NotifyAddFeed::class,
-		Commands\NotifyImportantEvents::class
+		Commands\NotifyImportantEvents::class,
+		Commands\UpdateSystemEvents::class
 	];
 
 	/**
