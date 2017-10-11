@@ -62,7 +62,7 @@ class ImportantDate extends Notification
 	 */
 	public function toOneSignal( $notifiable )
 	{
-		$date = Hijri::parse( $this->event->hijri_date );
+		$date = Hijri::format_date( $this->event->hijri_date );
 
 		return OneSignalMessage::create()
 		                       ->subject( "{$this->event->title}" )
