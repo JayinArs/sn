@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Event;
+use App\EventMeta;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Hijri;
@@ -44,12 +45,13 @@ class UpdateSystemEvents extends Command
 
 		if ( $system ) {
 			Event::where( 'is_system_event', 1 )->each( function ( $event ) {
-				$date         = Carbon::parse( $event->hijri_date );
-				$current_year = Hijri::getCurrentYear();
-
-				$date->setDate( $current_year, $date->month, $date->day );
-				$event->hijri_date = $date->toDateString();
-
+				$event->is_recurring = 1;
+				EventMeta::updateOrCreate( [
+					                           'event_id' => $event->id,
+					                           'key'      => 'recurring_type',
+				                           ], [
+					                           'value' => 'yearly'
+				                           ] );
 				$event->save();
 				$this->info( $event->id . ", " );
 			} );
