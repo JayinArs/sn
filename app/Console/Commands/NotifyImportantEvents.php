@@ -64,7 +64,7 @@ class NotifyImportantEvents extends Command
 				     $users = User::where( 'timezone', $timezone )->get();
 				     Notification::send( $users, new ImportantDate( $event ) );
 
-				     $this->info( "Notified: {$event->title}" );
+				     $this->info( "Notified: {$event->title} to " . count($users) . " users." );
 			     } );
 		} else {
 
