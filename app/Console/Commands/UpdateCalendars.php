@@ -51,16 +51,15 @@ class UpdateCalendars extends Command
 				        $next_time    = Carbon::parse( $calendar->next_update_time, $calendar->timezone );
 				        $current_time = Carbon::now( $calendar->timezone );
 
-				        //if ( ! $last_updated->isSameDay( $current_time ) ) {
-
-				        //}
-				        $last_updated->addDay();
+				        if ( ! $last_updated->isSameDay( $current_time ) ) {
+					        $last_updated->addDay();
+				        }
 				        $next_time->setDate( $last_updated->year, $last_updated->month, $last_updated->day );
 
-				        //$this->info("current time" . $current_time->toDateTimeString());
-				        //$this->info("next time" . $next_time->toDateTimeString());
-				        //$this->info("last updated time" . $last_updated->toDateTimeString());
-				        //$this->info("diff: " . $current_time->diffInMinutes( $next_time, false ));
+				        //$this->info( "current time" . $current_time->toDateTimeString() );
+				        //$this->info( "next time" . $next_time->toDateTimeString() );
+				        //$this->info( "last updated time" . $last_updated->toDateTimeString() );
+				        //$this->info( "diff: " . $current_time->diffInMinutes( $next_time, false ) );
 
 				        //exit;
 				        if ( $current_time->diffInMinutes( $next_time, false ) <= 0 ) {
