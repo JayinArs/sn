@@ -208,7 +208,7 @@ class ApiOrganizationController extends Controller
 				$path     = Config::get( 'constants.organization.image_path' );
 				$f        = $file->move( public_path( $path ), $filename );
 
-				if ( $f->isReadable() ) {
+				if ( $f->isReadable() && $f->isFile() ) {
 					$file = File::create( [
 						                      'data'      => "data:image/jpg;base64," . base64_encode( file_get_contents( $f->getRealPath() ) ),
 						                      'url'       => $path . $filename,
@@ -229,6 +229,8 @@ class ApiOrganizationController extends Controller
 							                                                          ] )
 						                                  ] );
 					}
+				} else {
+					return JSONResponse::encode( Config::get( 'constants.HTTP_CODES.FAILED' ), null, MultiLang::getPhraseByKey( 'strings.organization.upload_failed' ) );
 				}
 			}
 
